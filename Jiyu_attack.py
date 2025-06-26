@@ -75,6 +75,7 @@ def ip_to_tuple(ip: str) -> tuple[int, int, int, int]:
     return ip_tuple
 
 
+# pylint: disable=too-many-branches
 def ip_analyze(ip: str) -> list[str]:
     """
     Analyzes an IP address or range and returns a list of valid IP addresses.
