@@ -136,8 +136,8 @@ def send_packet(src_ip: str, dst_ip: str, dst_port: int, data: bytes) -> None:
 
 
 if __name__ == "__main__":
-    teacher_ip = input("Enter the teacher's IP address: ")
-    target = input("Enter the target IP address: ")
+    teacher_ip = input("Enter the teacher's IP address: ").strip()
+    target = input("Enter the target IP address: ").strip()
     while True:
         tmsg = input("Enter your message (empty to exit): ")
         if not tmsg:
