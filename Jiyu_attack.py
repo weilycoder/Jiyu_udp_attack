@@ -113,15 +113,35 @@ def pkg_message(
     return head + data + b"\x00" * 98
 
 
-if __name__ == "__main__":
-    import socket
+def send_packet(src_ip: str, dst_ip: str, dst_port: int, data: bytes) -> None:
+    """
+    Sends a UDP packet with the specified source IP, destination IP, destination port, and data payload.
 
+    Args:
+        src_ip (str): The source IP address.
+        dst_ip (str): The destination IP address.
+        dst_port (int): The destination port number.
+        data (bytes): The data payload to include in the packet.
+
+    Raises:
+        scapy.error.Scapy_Exception: If there is an error sending the packet.
+
+    Note:
+        This function uses Scapy to construct and send the packet.
+        Ensure that Scapy is installed and properly configured in your environment.
+    """
+    # pylint: disable=no-member
+    packet = scapy.IP(src=src_ip, dst=dst_ip) / scapy.UDP(dport=dst_port) / scapy.Raw(load=data)  # type: ignore
+    scapy.send(packet, count=1, verbose=False)
+
+
+if __name__ == "__main__":
+    teacher_ip = input("Enter the teacher's IP address: ")
     target = input("Enter the target IP address: ")
-    client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     while True:
         tmsg = input("Enter your message (empty to exit): ")
         if not tmsg:
             print("Exiting...")
             break
         payload = pkg_message(tmsg, errors="error")
-        client.sendto(payload, (target, 4705))
+        send_packet(teacher_ip, target, 4705, payload)
