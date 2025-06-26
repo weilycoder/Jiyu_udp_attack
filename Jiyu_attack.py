@@ -1,9 +1,20 @@
-# pylint: disable=missing-function-docstring, missing-module-docstring, line-too-long, invalid-name
+# pylint: disable=line-too-long, invalid-name
+
+"""
+Jiyu Attack Script
+
+This script implements a Jiyu attack by sending specially crafted UDP packets to a target IP address.
+It allows the user to input a message, which is then formatted and packaged into a byte array before being sent.
+
+The script uses Scapy for packet manipulation and sending.
+"""
 
 import secrets
 import warnings
 
 from typing import Literal, Type
+
+import scapy.all as scapy
 
 
 def throw_error(
