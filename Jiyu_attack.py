@@ -153,8 +153,8 @@ def ip_analyze(ip: str) -> list[str]:
 
 def format_msg(
     msg: str,
+    max_length: int,
     *,
-    max_length: int = 800,
     errors: Literal["error", "warning", "ignore"] = "error",
 ) -> bytes:
     """
@@ -202,7 +202,7 @@ def pkg_message(
     Raises:
         ValueError: If the message length exceeds 800 bytes or if the header length is incorrect
     """
-    data = format_msg(msg, errors=errors)
+    data = format_msg(msg, 800, errors=errors)
     head = (
         b"DMOC\x00\x00\x01\x00\x9e\x03\x00\x00"
         + secrets.token_bytes(16)
