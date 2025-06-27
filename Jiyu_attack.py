@@ -172,20 +172,7 @@ def format_data(
         throw_error(f"Expected string, got {type(data).__name__}", errors=errors)
     if not isinstance(max_length, int) or max_length <= 0:
         throw_error(f"Invalid maximum length: {max_length}", errors=errors)
-    ret = bytearray()
-    for s in data:
-        c = ord(s)
-        if c > 0xFFFF:
-            throw_error(f"Character {s} (0x{c:X}) is not supported.", errors=errors)
-        else:
-            ret.append(c & 0xFF)
-            ret.append((c >> 8) & 0xFF)
-    if len(ret) > max_length:
-        throw_error(
-            f"Data length exceeds maximum length of {max_length} bytes: {len(ret)} bytes.",
-            errors=errors,
-        )
-    return bytes(ret.ljust(max_length, b"\x00"))[:max_length]
+    return data.encode("utf-16le").ljust(max_length, b"\x00")[:max_length]
 
 
 def pkg_message(
