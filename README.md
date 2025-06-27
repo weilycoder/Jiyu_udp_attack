@@ -4,6 +4,12 @@
 
 对这方面技术的了解来自 [ht0Ruial/Jiyu_udp_attack](https://github.com/ht0Ruial/Jiyu_udp_attack/)。
 
+## Environment
+
+本项目使用了第三方库 scapy，因此需要下载 Npcap 或类似软件。
+
+我正在学习 udp 包的格式，来在后续版本避免使用 scapy 和 Npcap。
+
 ## Usage
 
 你可以从 Python 导入 `Jiyu_attack` 模块，也可以使用命令行。
