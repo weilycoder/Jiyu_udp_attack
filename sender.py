@@ -65,7 +65,7 @@ def ip_analyze(ip: str) -> list[str]:
         ip32 &= (0xFFFFFFFF >> (32 - mask)) << (32 - mask)
         return [
             f"{(i >> 24) & 0xFF}.{(i >> 16) & 0xFF}.{(i >> 8) & 0xFF}.{i & 0xFF}"
-            for i in range(ip32, ip32 + (1 << (32 - mask)))
+            for i in range(ip32 + 1, ip32 | ((1 << (32 - mask)) - 1))
         ]
     if "-" in ip:
         ip_range_tuple = ip.split(".")
