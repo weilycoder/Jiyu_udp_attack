@@ -12,12 +12,12 @@
 
 ## Usage
 
-你可以从 Python 导入 `Jiyu_attack` 模块，也可以使用命令行。
+你可以从 Python 导入 `Jiyu_udp_attack` 模块，也可以使用命令行 `python Jiyu_udp_attack`。
 
-使用 `Jiyu_attack.py -h` 来获取帮助信息：
+使用 `python Jiyu_udp_attack -h` 来获取帮助信息：
 
 ```
-usage: Jiyu_attack.py [-h] -s TEACHER_IP -t TARGET [-p PORT] (-m MESSAGE | -w WEBSITE | -c COMMAND)
+usage: Jiyu_udp_attack [-h] -s TEACHER_IP -t TARGET [-p PORT] (-m MESSAGE | -w WEBSITE | -c COMMAND)
 
 Jiyu Attack Script
 
