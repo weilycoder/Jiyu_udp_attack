@@ -121,18 +121,14 @@ def pkg_website(url: str) -> bytes:
     """
     data = format_data(url)
 
-    len1 = len(data) + 36
-    len2 = len1 - 13
-    siz1 = len1.to_bytes(4, "little")
-    siz2 = len2.to_bytes(4, "little")
-    siz2 = siz2[1:] + siz2[0:1]
-
     head = (
         b"DMOC\x00\x00\x01\x00"
-        + siz1
-        + secrets.token_bytes(25)
-        + siz2
-        + b"\x00\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x18\x00\x00\x00\x00\x00\x00\x00"
+        + (len(data) + 36).to_bytes(4, "little")
+        + secrets.token_bytes(16)
+        + b" N\x00\x00\xc0\xa8\xe9\x01"
+        + (len(data) + 23).to_bytes(4, "little")
+        + (len(data) + 23).to_bytes(4, "little")
+        + b"\x00\x02\x00\x00\x00\x00\x00\x00\x18\x00\x00\x00\x00\x00\x00\x00"
     )
 
     return head + data + b"\x00" * 4
