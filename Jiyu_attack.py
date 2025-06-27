@@ -151,8 +151,8 @@ def ip_analyze(ip: str) -> list[str]:
     return [f"{ip_tuple[0]}.{ip_tuple[1]}.{ip_tuple[2]}.{ip_tuple[3]}"]
 
 
-def format_msg(
-    msg: str,
+def format_data(
+    data: str,
     max_length: int,
     *,
     errors: Literal["error", "warning", "ignore"] = "error",
@@ -169,7 +169,7 @@ def format_msg(
         bytes: The formatted byte array, padded with null bytes if necessary.
     """
     ret = bytearray()
-    for s in msg:
+    for s in data:
         c = ord(s)
         if c > 0xFFFF:
             throw_error(f"Character {s} (0x{c:X}) is not supported.", errors=errors)
@@ -202,7 +202,7 @@ def pkg_message(
     Raises:
         ValueError: If the message length exceeds 800 bytes or if the header length is incorrect
     """
-    data = format_msg(msg, 800, errors=errors)
+    data = format_data(msg, 800, errors=errors)
     head = (
         b"DMOC\x00\x00\x01\x00\x9e\x03\x00\x00"
         + secrets.token_bytes(16)
