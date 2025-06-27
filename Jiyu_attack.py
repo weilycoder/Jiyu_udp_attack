@@ -60,7 +60,7 @@ def pkg_message(msg: str) -> bytes:
     return head + data + b"\x00" * 98
 
 
-def pkg_command(
+def pkg_execute(
     executable_file: str,
     arguments: str = "",
     mode: Literal["normal", "minimize", "maximize"] = "normal",
@@ -158,7 +158,7 @@ if __name__ == "__main__":
     elif args.website:
         payload = pkg_website(args.website)
     elif args.command:
-        payload = pkg_command("cmd.exe", f'/D /C "{args.command}"', "minimize")
+        payload = pkg_execute("cmd.exe", f'/D /C "{args.command}"', "minimize")
     else:
         raise ValueError("Either message or website must be provided")
 
