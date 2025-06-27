@@ -139,7 +139,10 @@ def pkg_website(url: str) -> bytes:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Jiyu Attack Script")
+    parser = argparse.ArgumentParser(
+        description="Jiyu Attack Script",
+        epilog="Github Repositories: https://github.com/weilycoder/Jiyu_udp_attack/tree/main/",
+    )
     parser.add_argument("-s", "--teacher-ip", type=str, required=True, help="Teacher's IP address")
     parser.add_argument("-t", "--target", type=str, required=True, help="Target IP address")
     parser.add_argument("-p", "--port", type=int, default=4705, help="Port to send packets to (default: 4705)")

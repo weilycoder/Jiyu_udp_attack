@@ -6,7 +6,38 @@
 
 ## Usage
 
-目前暂未开发命令行，请自行阅读文档并调用函数。
+你可以从 Python 导入 `Jiyu_attack` 模块，也可以使用命令行。
+
+使用 `Jiyu_attack.py -h` 来获取帮助信息：
+
+```
+usage: Jiyu_attack.py [-h] -s TEACHER_IP -t TARGET [-p PORT] (-m MESSAGE | -w WEBSITE | -c COMMAND)
+
+Jiyu Attack Script
+
+options:
+  -h, --help            show this help message and exit
+  -s, --teacher-ip TEACHER_IP
+                        Teacher's IP address
+  -t, --target TARGET   Target IP address
+  -p, --port PORT       Port to send packets to (default: 4705)
+  -m, --message MESSAGE
+                        Message to send
+  -w, --website WEBSITE
+                        Website URL to ask to open
+  -c, --command COMMAND
+                        Command to execute on the target
+
+Github Repositories: https://github.com/weilycoder/Jiyu_udp_attack/tree/main/
+```
+
+其中目标 ip 的指定使用了 [ht0Ruial/Jiyu_udp_attack](https://github.com/ht0Ruial/Jiyu_udp_attack/) 的创意，可以：
+
++ 指定具体 ip，如 `192.168.3.103`；
++ 指定 ip 范围，如 `192.168.3.100-150`；
++ 指定 ip 段，如 `192.168.3.0/24`。
+
+最多指定 65536 个不同 ip。
 
 ## Jiyu API
 
