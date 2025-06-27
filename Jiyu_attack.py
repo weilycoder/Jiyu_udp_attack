@@ -168,6 +168,10 @@ def format_data(
     Returns:
         bytes: The formatted byte array, padded with null bytes if necessary.
     """
+    if not isinstance(data, str):
+        throw_error(f"Expected string, got {type(data).__name__}", errors=errors)
+    if not isinstance(max_length, int) or max_length <= 0:
+        throw_error(f"Invalid maximum length: {max_length}", errors=errors)
     ret = bytearray()
     for s in data:
         c = ord(s)
@@ -209,9 +213,56 @@ def pkg_message(
         + b" N\x00\x00\xc0\xa8l\x01\x91\x03\x00\x00"
         + b"\x91\x03\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x05\x00\x00\x00"
     )
-    assert len(head) == 56, "Header length must be 56 bytes"
-    assert len(data) == 800, "Message length must be 800 bytes"
     return head + data + b"\x00" * 98
+
+
+def pkg_command(
+    executable_file: str,
+    arguments: str = "",
+    mode: Literal["normal", "minimize", "maximize"] = "normal",
+    *,
+    errors: Literal["error", "warning", "ignore"] = "error",
+) -> bytes:
+    """
+    Packages a command with an executable file and optional arguments into a specific byte format.
+
+    Args:
+        executable_file (str): The name of the executable file to run.
+        arguments (str, optional): The command-line arguments to pass to the executable. Defaults to an empty string.
+        mode (Literal["normal", "minimize", "maximize"], optional): The mode of execution. Defaults to "normal".
+        errors (Literal["error", "warning", "ignore"], optional): Error handling strategy. Defaults to "error".
+
+    Returns:
+        bytes: The packaged command as a byte array, including a header and formatted data.
+
+    Raises:
+        ValueError: If the executable file or arguments exceed their respective length limits,
+                     or if an invalid mode is specified.
+        TypeError: If the executable file or arguments are not strings.
+
+    Note:
+        The function constructs a specific header and formats the executable file and arguments
+        into byte arrays, ensuring they fit within defined length limits.
+    """
+    head = (
+        b"DMOC\x00\x00\x01\x00n\x03\x00\x00"
+        + secrets.token_bytes(16)
+        + b" N\x00\x00\xc0\xa8\xe9\x01a\x03\x00\x00a\x03\x00\x00"
+        + b"\x00\x02\x00\x00\x00\x00\x00\x00\x0f\x00\x00\x00\x01\x00\x00\x00"
+    )
+    data0 = format_data(executable_file, 512, errors=errors)
+    data1 = format_data(arguments, 254, errors=errors)
+    data2 = b"\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+    match mode:
+        case "normal":
+            pass  # No additional data needed for normal mode
+        case "minimize":
+            data2 = b"\x01\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+        case "maximize":
+            data2 = b"\x02\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+        case _:
+            throw_error(f"Invalid mode: {mode}", errors=errors)
+    return head + data0 + data1 + b"\x00" * 66 + data2
 
 
 def send_packet(src_ip: str, dst_ip: str, dst_port: int, data: bytes) -> None:
