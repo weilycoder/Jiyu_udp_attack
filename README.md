@@ -6,9 +6,9 @@
 
 ## Environment
 
-本项目使用了第三方库 scapy，因此需要下载 Npcap 或类似软件。
+项目的 Python 为 3.13，即使经 PyInstaller 打包也对 Win 7 系统不太友好。未来可能向下兼容。
 
-我正在学习 udp 包的格式，来在后续版本避免使用 scapy 和 Npcap。
+此外，为了移除 scapy 依赖，项目使用原始套接字进行请求，在大部分系统上可能需要管理员权限。
 
 ## Usage
 
