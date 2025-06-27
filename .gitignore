@@ -1,6 +1,6 @@
-# Byte-compiled / optimized / DLL files
+# Byte-compiled / optimized / DLL files / Zip files
 __pycache__/
-*.py[cod]
+*.py[codz]
 *$py.class
 
 # C extensions
@@ -195,3 +195,6 @@ cython_debug/
 
 # VS Code
 .vscode/
+
+# Chore
+demo.py
