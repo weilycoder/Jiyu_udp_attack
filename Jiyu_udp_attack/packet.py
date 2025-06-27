@@ -13,7 +13,7 @@ def format_data(data: str, max_length: Optional[int] = None) -> bytes:
 
     Args:
         msg (str): The input string to format.
-        max_length (int, optional): The maximum length of the resulting byte array. Defaults to 800.
+        max_length (int, optional): The maximum length of the output byte array.
 
     Returns:
         bytes: The formatted byte array, padded with null bytes if necessary.
@@ -26,7 +26,10 @@ def format_data(data: str, max_length: Optional[int] = None) -> bytes:
         raise TypeError(f"Expected int, got {type(max_length).__name__}")
     if max_length <= 0:
         raise ValueError(f"Invalid maximum length: {max_length}")
-    return data.encode("utf-16le").ljust(max_length, b"\x00")[:max_length]
+    padded_bytes = data.encode("utf-16le").ljust(max_length, b"\x00")
+    if len(padded_bytes) > max_length:
+        raise ValueError(f"Data exceeds maximum length: {len(padded_bytes)} > {max_length}")
+    return padded_bytes
 
 
 def pkg_message(msg: str) -> bytes:
@@ -38,9 +41,6 @@ def pkg_message(msg: str) -> bytes:
 
     Returns:
         bytes: The packaged message as a byte array, including a header and padding.
-
-    Raises:
-        ValueError: If the message length exceeds 800 bytes or if the header length is incorrect
     """
     data = format_data(msg, 800)
     head = (
@@ -67,15 +67,6 @@ def pkg_execute(
 
     Returns:
         bytes: The packaged command as a byte array, including a header and formatted data.
-
-    Raises:
-        ValueError: If the executable file or arguments exceed their respective length limits,
-                     or if an invalid mode is specified.
-        TypeError: If the executable file or arguments are not strings.
-
-    Note:
-        The function constructs a specific header and formats the executable file and arguments
-        into byte arrays, ensuring they fit within defined length limits.
     """
     head = (
         b"DMOC\x00\x00\x01\x00n\x03\x00\x00"
@@ -106,10 +97,6 @@ def pkg_website(url: str) -> bytes:
 
     Returns:
         bytes: The packaged URL as a byte array, including a header and padding.
-
-    Raises:
-        ValueError: If the URL length exceeds 800 bytes.
-        TypeError: If the URL is not a string.
     """
     data = format_data(url)
 

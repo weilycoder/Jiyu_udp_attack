@@ -139,9 +139,6 @@ def send_packet(
         dst_port (int): The destination port number.
         payload (bytes): The data payload to include in the packet.
 
-    Raises:
-        scapy.error.Scapy_Exception: If there is an error sending the packet.
-
     Note:
         This function uses Scapy to construct and send the packet.
         Ensure that Scapy is installed and properly configured in your environment.

@@ -12,10 +12,6 @@ def ip_to_tuple(ip: str) -> tuple[int, int, int, int]:
 
     Returns:
         tuple[int, int, int, int]: A tuple representing the four octets of the IP address.
-
-    Raises:
-        TypeError: If the input is not a string.
-        ValueError: If the input is not a valid IP address format.
     """
     if not isinstance(ip, str):
         raise TypeError(f"Expected string, got {type(ip).__name__}")
@@ -38,10 +34,6 @@ def ip_analyze(ip: str) -> list[str]:
 
     Returns:
         list[str]: A list of valid IP addresses.
-
-    Raises:
-        TypeError: If the input is not a string.
-        ValueError: If the input is not a valid IP address or range.
     """
     if not isinstance(ip, str):
         raise TypeError(f"Expected string, got {type(ip).__name__}")
