@@ -10,4 +10,10 @@ except ImportError:
     from packet import pkg_message, pkg_website, pkg_execute
 
 
-__all__ = ["send_packet", "broadcast_packet", "pkg_message", "pkg_website", "pkg_execute"]
+__all__ = [
+    "send_packet",
+    "broadcast_packet",
+    "pkg_message",
+    "pkg_website",
+    "pkg_execute",
+]

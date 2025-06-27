@@ -5,6 +5,7 @@ This module is used to send or broadcast UDP packets with spoofed IP addresses.
 import struct
 import random
 import socket
+from typing import Optional
 
 try:
     from Jiyu_udp_attack.ip_analyze import ip_analyze
@@ -33,8 +34,15 @@ def calculate_checksum(data: bytes) -> int:
     return ~total & 0xFFFF
 
 
-# pylint: disable=too-many-locals
-def create_raw_udp_packet(src_ip: str, dst_ip: str, dst_port: int, payload: bytes) -> bytes:
+def create_raw_udp_packet(
+    src_ip: str,
+    src_port: Optional[int],
+    dst_ip: str,
+    dst_port: int,
+    payload: bytes,
+    *,
+    ip_id: Optional[int] = None,
+) -> bytes:
     """
     Creates a raw UDP packet with a spoofed source IP address.
 
@@ -52,7 +60,7 @@ def create_raw_udp_packet(src_ip: str, dst_ip: str, dst_port: int, payload: byte
     ip_ihl = 5  # 5 * 4 = 20 bytes header
     ip_tos = 0
     ip_total_len = 20 + 8 + len(payload)  # IP header + UDP header + data
-    ip_id = random.randint(0, 65535)
+    ip_id = random.randint(0, 65535) if ip_id is None else ip_id
     ip_frag_off = 0
     ip_ttl = 64
     ip_proto = socket.IPPROTO_UDP
@@ -92,7 +100,8 @@ def create_raw_udp_packet(src_ip: str, dst_ip: str, dst_port: int, payload: byte
     )
 
     # 5. Build UDP header (initial checksum is 0)
-    src_port = random.randint(1024, 65535)  # Random source port
+    if src_port is None:
+        src_port = random.randint(1024, 65535)  # Random source port
     udp_length = 8 + len(payload)
     udp_header = struct.pack("!HHHH", src_port, dst_port, udp_length, 0)  # Initial checksum is 0
 
@@ -109,7 +118,15 @@ def create_raw_udp_packet(src_ip: str, dst_ip: str, dst_port: int, payload: byte
     return ip_header + udp_header + payload
 
 
-def send_packet(src_ip: str, dst_ip: str, dst_port: int, payload: bytes) -> None:
+def send_packet(
+    src_ip: str,
+    src_port: Optional[int],
+    dst_ip: str,
+    dst_port: int,
+    payload: bytes,
+    *,
+    ip_id: Optional[int] = None,
+) -> None:
     """
     Sends a UDP packet with the specified source IP, destination IP, destination port, and data payload.
 
@@ -117,6 +134,7 @@ def send_packet(src_ip: str, dst_ip: str, dst_port: int, payload: bytes) -> None
 
     Args:
         src_ip (str): The source IP address.
+        src_port (Optional[int]): The source port number. If None, a random port will be used.
         dst_ip (str): The destination IP address.
         dst_port (int): The destination port number.
         payload (bytes): The data payload to include in the packet.
@@ -130,11 +148,19 @@ def send_packet(src_ip: str, dst_ip: str, dst_port: int, payload: bytes) -> None
     """
     client = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)
     client.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
-    packet = create_raw_udp_packet(src_ip, dst_ip, dst_port, payload)
+    packet = create_raw_udp_packet(src_ip, src_port, dst_ip, dst_port, payload, ip_id=ip_id)
     client.sendto(packet, (dst_ip, dst_port))
 
 
-def broadcast_packet(src_ip: str, dst_ip: str, dst_port: int, payload: bytes) -> None:
+def broadcast_packet(
+    src_ip: str,
+    src_port: Optional[int],
+    dst_ip: str,
+    dst_port: int,
+    payload: bytes,
+    *,
+    ip_id: Optional[int] = None,
+) -> None:
     """
     Sends a broadcast UDP packet to the specified destination IP address or range.
 
@@ -142,9 +168,10 @@ def broadcast_packet(src_ip: str, dst_ip: str, dst_port: int, payload: bytes) ->
 
     Args:
         src_ip (str): The source IP address.
+        src_port (Optional[int]): The source port number. If None, a random port will be used.
         dst_ip (str): The broadcast IP address (e.g., "192.168.1.255", "192.168.1.0/24", "192.168.1.10-100").
         dst_port (int): The destination port number.
         payload (bytes): The data payload to include in the packet.
     """
     for ip in ip_analyze(dst_ip):
-        send_packet(src_ip, ip, dst_port, payload)
+        send_packet(src_ip, src_port, ip, dst_port, payload, ip_id=ip_id)
