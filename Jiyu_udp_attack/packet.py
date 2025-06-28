@@ -113,18 +113,24 @@ def pkg_website(url: str) -> bytes:
     return head + data + b"\x00" * 4
 
 
-def pkg_reboot(timeout: Optional[int] = None, message: str = "") -> bytes:
+def pkg_shutdown(timeout: Optional[int] = None, message: str = "", reboot: bool = False) -> bytes:
     """
-    Packages a command to reboot the system into a specific byte format, including a header.
+    Packages a shutdown or reboot command into a specific byte format, including a header and formatted data.
+
+    Args:
+        timeout (Optional[int]): The time in seconds before the shutdown or reboot occurs. If None, it defaults to immediate execution.
+        message (str): The message to display during the shutdown or reboot process.
+        reboot (bool): If True, the command will initiate a reboot; if False, it will initiate a shutdown.
 
     Returns:
-        bytes: The packaged reboot command as a byte array, including a header and padding.
+        bytes: The packaged shutdown or reboot command as a byte array, including a header and formatted data.
     """
     head = (
         b"DMOC\x00\x00\x01\x00*\x02\x00\x00"
         + secrets.token_bytes(16)
-        + b" N\x00\x00\xc0\xa8\xe9\x01\x1d\x02\x00\x00\x1d\x02\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x13\x00\x00"
-        + (b"\x01" if timeout is None else b"\x00")
+        + b" N\x00\x00\xc0\xa8\xe9\x01\x1d\x02\x00\x00\x1d\x02\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00"
+        + (b"\x13\x00" if reboot else b"\x14\x00")
+        + (b"\x00\x01" if timeout is None else b"\x00\x00")
         + (timeout or 0).to_bytes(4, "little")
         + b"\x01\x00\x00\x00\x00\x00\x00\x00"
     )

@@ -13,7 +13,7 @@ import argparse
 from os import name
 
 from sender import broadcast_packet
-from packet import pkg_message, pkg_reboot, pkg_rename, pkg_website, pkg_execute
+from packet import pkg_message, pkg_shutdown, pkg_rename, pkg_website, pkg_execute
 
 
 if __name__ == "__main__":
@@ -77,11 +77,19 @@ if __name__ == "__main__":
         help="Command to execute on the target",
     )
     group.add_argument(
+        "-s",
+        "--shutdown",
+        nargs="*",
+        default=None,
+        metavar=("timeout", "message"),
+        help="Shutdown the target machine, optionally with a timeout and message",
+    )
+    group.add_argument(
         "-r",
         "--reboot",
         nargs="*",
         default=None,
-        metavar="timeout [message]",
+        metavar=("timeout", "message"),
         help="Reboot the target machine, optionally with a timeout and message",
     )
     group.add_argument(
@@ -105,14 +113,24 @@ if __name__ == "__main__":
             payload = pkg_website(args.website)
         elif args.command:
             payload = pkg_execute("cmd.exe", f'/D /C "{args.command}"', "minimize")
+        elif args.shutdown is not None:
+            match args.shutdown:
+                case []:
+                    payload = pkg_shutdown()
+                case [timeout]:
+                    payload = pkg_shutdown(timeout=int(timeout))
+                case [timeout, message]:
+                    payload = pkg_shutdown(timeout=int(timeout), message=message)
+                case _:
+                    parser.error("Invalid shutdown arguments: expected [timeout] or [timeout, message]")
         elif args.reboot is not None:
             match args.reboot:
                 case []:
-                    payload = pkg_reboot()
+                    payload = pkg_shutdown(reboot=True)
                 case [timeout]:
-                    payload = pkg_reboot(timeout=int(timeout))
+                    payload = pkg_shutdown(timeout=int(timeout), reboot=True)
                 case [timeout, message]:
-                    payload = pkg_reboot(timeout=int(timeout), message=message)
+                    payload = pkg_shutdown(timeout=int(timeout), message=message, reboot=True)
                 case _:
                     parser.error("Invalid reboot arguments: expected [timeout] or [timeout, message]")
         elif args.rename:
