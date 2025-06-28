@@ -119,7 +119,7 @@ def create_raw_udp_packet(
 
 
 def send_packet(
-    src_ip: str,
+    src_ip: Optional[str],
     src_port: Optional[int],
     dst_ip: str,
     dst_port: int,
@@ -128,21 +128,26 @@ def send_packet(
     ip_id: Optional[int] = None,
 ) -> None:
     """
-    Sends a UDP packet with the specified source IP, destination IP, destination port, and data payload.
-
-    Ensure that the source IP address is valid and that you have permission to send packets with spoofed addresses.
+    Sends a UDP packet with a spoofed source IP address.
 
     Args:
-        src_ip (str): The source IP address.
+        src_ip (Optional[str]): The source IP address to spoof. If None, spoofing is not performed.
         src_port (Optional[int]): The source port number. If None, a random port will be used.
         dst_ip (str): The destination IP address.
         dst_port (int): The destination port number.
         payload (bytes): The data payload to include in the packet.
+        ip_id (Optional[int]): The IP identification number. If None, a random ID will be used.
     """
-    client = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)
-    client.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
-    packet = create_raw_udp_packet(src_ip, src_port, dst_ip, dst_port, payload, ip_id=ip_id)
-    client.sendto(packet, (dst_ip, dst_port))
+    if src_ip is None:
+        if src_port is not None or ip_id is not None:
+            raise ValueError("If src_ip is None, src_port and ip_id must also be None.")
+        client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        client.sendto(payload, (dst_ip, dst_port))
+    else:
+        client = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)
+        client.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
+        packet = create_raw_udp_packet(src_ip, src_port, dst_ip, dst_port, payload, ip_id=ip_id)
+        client.sendto(packet, (dst_ip, dst_port))
 
 
 def broadcast_packet(

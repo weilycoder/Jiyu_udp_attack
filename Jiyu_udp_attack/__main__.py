@@ -29,7 +29,7 @@ if __name__ == "__main__":
         "--teacher-ip",
         type=str,
         metavar="ip",
-        required=True,
+        default=None,
         help="Teacher's IP address",
     )
     network_config_group.add_argument(
