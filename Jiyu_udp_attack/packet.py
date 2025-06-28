@@ -130,3 +130,19 @@ def pkg_reboot(timeout: Optional[int] = None, message: str = "") -> bytes:
     )
     data = format_data(message, 256)
     return head + data + b"\x00" * 258
+
+
+def pkg_rename(name: str, name_id: int = 0) -> bytes:
+    """
+    Packages a command to rename a file or directory into a specific byte format, including a header.
+
+    Args:
+        name (str): The new name for the file or directory.
+        name_id (int, optional): An identifier for the name. Defaults to 0.
+
+    Returns:
+        bytes: The packaged rename command as a byte array, including a header and formatted data.
+    """
+    head = b"GCMN\x00\x00\x01\x00D\x00\x00\x00f\xb1\xe4\x92?\x9a6J\x94:=\xa3\xbd\x97`A" + name_id.to_bytes(4, "little")
+    data = format_data(name + "\x00", 64)
+    return head + data

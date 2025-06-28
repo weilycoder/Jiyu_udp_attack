@@ -10,9 +10,10 @@ The script uses Scapy for packet manipulation and sending.
 """
 
 import argparse
+from os import name
 
 from sender import broadcast_packet
-from packet import pkg_message, pkg_reboot, pkg_website, pkg_execute
+from packet import pkg_message, pkg_reboot, pkg_rename, pkg_website, pkg_execute
 
 
 if __name__ == "__main__":
@@ -83,6 +84,13 @@ if __name__ == "__main__":
         metavar="timeout [message]",
         help="Reboot the target machine, optionally with a timeout and message",
     )
+    group.add_argument(
+        "-n",
+        "--rename",
+        nargs=2,
+        metavar=("name", "name_id"),
+        help="Rename the target machine",
+    )
 
     args = parser.parse_args()
     teacher_ip = args.teacher_ip
@@ -107,6 +115,9 @@ if __name__ == "__main__":
                     payload = pkg_reboot(timeout=int(timeout), message=message)
                 case _:
                     parser.error("Invalid reboot arguments: expected [timeout] or [timeout, message]")
+        elif args.rename:
+            name, name_id = args.rename
+            payload = pkg_rename(name, int(name_id))
         else:
             raise ValueError("Either message or website must be provided")
 
