@@ -19,7 +19,8 @@
 使用 `python Jiyu_udp_attack -h` 来获取帮助信息：
 
 ```
-usage: Jiyu_udp_attack [-h] -s TEACHER_IP [-f TEACHER_PORT] -t TARGET [-p PORT] [-i IP_ID] (-m MESSAGE | -w WEBSITE | -c COMMAND | -r [timeout [message] ...])
+usage: Jiyu_udp_attack [-h] -s TEACHER_IP [-f TEACHER_PORT] -t TARGET [-p PORT] [-i IP_ID] (-m MESSAGE | -w WEBSITE | -c COMMAND |
+                       -r [timeout [message] ...] | -n name name_id)
 
 Jiyu Attack Script
 
@@ -40,6 +41,8 @@ options:
                         Command to execute on the target
   -r, --reboot [timeout [message] ...]
                         Reboot the target machine, optionally with a timeout and message
+  -n, --rename name name_id
+                        Rename the target machine
 
 Github Repositories: https://github.com/weilycoder/Jiyu_udp_attack/tree/main/
 ```
@@ -73,6 +76,22 @@ Data 区长 $954$。
 | $28$  | `204e0000c0a86c019103000091030000000800000000000005000000` |
 | $800$ |               信息内容，使用 `utf-16le` 编码               |
 | $98$  |                  全 $0$ 段，可能是保留区                   |
+
+### Rename
+
+Data 区长 $96$。
+
+| 长度 |                            内容                            |
+| :--: | :--------------------------------------------------------: |
+| $28$ | `47434d4e000001004400000066b1e4923f9a364a943a3da3bd976041` |
+| $4$  |              *ID*，需要大于上一次提供的 *ID*               |
+| $64$ |        新名称，以 `\x00` 结尾，使用 `utf-16le` 编码        |
+
+由于新名称的结尾以 `\x00` 标记，因此在结尾后可以加入其他数据，不影响识别，也没有副作用。
+
+注意，结尾标记 `\x00` 经 `utf-16le` 编码后变为 `\x00\x00`。
+
+如果提供一个较大的 *ID*，会使教师端的重命名消息不在学生端提示。
 
 ### Execute
 
@@ -112,6 +131,8 @@ Data 区变长，至少 $64$ 个字节。
 |       $4$       |             全 $0$ 段              |
 
 ### Reboot
+
+用于重启学生机。
 
 Data 区长 $582$。
 
