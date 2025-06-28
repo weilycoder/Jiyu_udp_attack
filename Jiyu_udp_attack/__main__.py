@@ -21,7 +21,10 @@ if __name__ == "__main__":
         description="Jiyu Attack Script",
         epilog="Github Repositories: https://github.com/weilycoder/Jiyu_udp_attack/tree/main/",
     )
-    parser.add_argument(
+    network_config_group = parser.add_argument_group(
+        "Network Configuration", "Specify the network configuration for the attack."
+    )
+    network_config_group.add_argument(
         "-f",
         "--teacher-ip",
         type=str,
@@ -29,7 +32,7 @@ if __name__ == "__main__":
         required=True,
         help="Teacher's IP address",
     )
-    parser.add_argument(
+    network_config_group.add_argument(
         "-fp",
         "--teacher-port",
         type=int,
@@ -37,7 +40,7 @@ if __name__ == "__main__":
         default=None,
         help="Teacher's port (default to random port)",
     )
-    parser.add_argument(
+    network_config_group.add_argument(
         "-t",
         "--target",
         type=str,
@@ -45,7 +48,7 @@ if __name__ == "__main__":
         required=True,
         help="Target IP address",
     )
-    parser.add_argument(
+    network_config_group.add_argument(
         "-tp",
         "--target-port",
         type=int,
@@ -53,7 +56,7 @@ if __name__ == "__main__":
         default=4705,
         help="Port to send packets to (default: 4705)",
     )
-    parser.add_argument(
+    network_config_group.add_argument(
         "-i",
         "--ip-id",
         type=int,
@@ -62,29 +65,32 @@ if __name__ == "__main__":
         help="IP ID for the packet (default: random ID)",
     )
 
-    group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument(
+    attack_action_group = parser.add_argument_group(
+        "Attack Action", "Specify the action to perform on the target machine. "
+    )
+    attack_action = attack_action_group.add_mutually_exclusive_group(required=True)
+    attack_action.add_argument(
         "-m",
         "--message",
         type=str,
         metavar="msg",
         help="Message to send",
     )
-    group.add_argument(
+    attack_action.add_argument(
         "-w",
         "--website",
         type=str,
         metavar="url",
         help="Website URL to ask to open",
     )
-    group.add_argument(
+    attack_action.add_argument(
         "-c",
         "--command",
         type=str,
         metavar="command",
         help="Command to execute on the target",
     )
-    group.add_argument(
+    attack_action.add_argument(
         "-s",
         "--shutdown",
         nargs="*",
@@ -92,7 +98,7 @@ if __name__ == "__main__":
         metavar=("timeout", "message"),
         help="Shutdown the target machine, optionally with a timeout and message",
     )
-    group.add_argument(
+    attack_action.add_argument(
         "-r",
         "--reboot",
         nargs="*",
@@ -100,14 +106,14 @@ if __name__ == "__main__":
         metavar=("timeout", "message"),
         help="Reboot the target machine, optionally with a timeout and message",
     )
-    group.add_argument(
+    attack_action.add_argument(
         "-n",
         "--rename",
         nargs=2,
         metavar=("name", "name_id"),
         help="Rename the target machine",
     )
-    group.add_argument(
+    attack_action.add_argument(
         "--hex",
         type=str,
         metavar="hex_data",

@@ -29,6 +29,10 @@ Jiyu Attack Script
 
 options:
   -h, --help            show this help message and exit
+
+Network Configuration:
+  Specify the network configuration for the attack.
+
   -f, --teacher-ip ip   Teacher's IP address
   -fp, --teacher-port port
                         Teacher's port (default to random port)
@@ -36,6 +40,10 @@ options:
   -tp, --target-port port
                         Port to send packets to (default: 4705)
   -i, --ip-id ip_id     IP ID for the packet (default: random ID)
+
+Attack Action:
+  Specify the action to perform on the target machine.
+
   -m, --message msg     Message to send
   -w, --website url     Website URL to ask to open
   -c, --command command
@@ -51,7 +59,6 @@ options:
   --hex hex_data        Hexadecimal string to send as a raw packet
 
 Github Repositories: https://github.com/weilycoder/Jiyu_udp_attack/tree/main/
-
 ```
 
 其中目标 ip 的指定使用了 [ht0Ruial/Jiyu_udp_attack](https://github.com/ht0Ruial/Jiyu_udp_attack/) 的创意，可以：
