@@ -22,14 +22,14 @@ if __name__ == "__main__":
         epilog="Github Repositories: https://github.com/weilycoder/Jiyu_udp_attack/tree/main/",
     )
     parser.add_argument(
-        "-s",
+        "-f",
         "--teacher-ip",
         type=str,
         required=True,
         help="Teacher's IP address",
     )
     parser.add_argument(
-        "-f",
+        "-fp",
         "--teacher-port",
         type=int,
         default=None,
@@ -43,8 +43,8 @@ if __name__ == "__main__":
         help="Target IP address",
     )
     parser.add_argument(
-        "-p",
-        "--port",
+        "-tp",
+        "--target-port",
         type=int,
         default=4705,
         help="Port to send packets to (default: 4705)",
