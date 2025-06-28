@@ -138,10 +138,6 @@ def send_packet(
         dst_ip (str): The destination IP address.
         dst_port (int): The destination port number.
         payload (bytes): The data payload to include in the packet.
-
-    Note:
-        This function uses Scapy to construct and send the packet.
-        Ensure that Scapy is installed and properly configured in your environment.
     """
     client = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)
     client.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
