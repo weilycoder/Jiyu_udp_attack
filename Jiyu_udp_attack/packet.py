@@ -111,3 +111,22 @@ def pkg_website(url: str) -> bytes:
     )
 
     return head + data + b"\x00" * 4
+
+
+def pkg_reboot(timeout: Optional[int] = None, message: str = "") -> bytes:
+    """
+    Packages a command to reboot the system into a specific byte format, including a header.
+
+    Returns:
+        bytes: The packaged reboot command as a byte array, including a header and padding.
+    """
+    head = (
+        b"DMOC\x00\x00\x01\x00*\x02\x00\x00"
+        + secrets.token_bytes(16)
+        + b" N\x00\x00\xc0\xa8\xe9\x01\x1d\x02\x00\x00\x1d\x02\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x13\x00\x00"
+        + (b"\x01" if timeout is None else b"\x00")
+        + (timeout or 0).to_bytes(4, "little")
+        + b"\x01\x00\x00\x00\x00\x00\x00\x00"
+    )
+    data = format_data(message, 256)
+    return head + data + b"\x00" * 258
