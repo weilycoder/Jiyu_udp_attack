@@ -25,6 +25,7 @@ if __name__ == "__main__":
         "-f",
         "--teacher-ip",
         type=str,
+        metavar="ip",
         required=True,
         help="Teacher's IP address",
     )
@@ -32,6 +33,7 @@ if __name__ == "__main__":
         "-fp",
         "--teacher-port",
         type=int,
+        metavar="port",
         default=None,
         help="Teacher's port (default to random port)",
     )
@@ -39,6 +41,7 @@ if __name__ == "__main__":
         "-t",
         "--target",
         type=str,
+        metavar="ip",
         required=True,
         help="Target IP address",
     )
@@ -46,6 +49,7 @@ if __name__ == "__main__":
         "-tp",
         "--target-port",
         type=int,
+        metavar="port",
         default=4705,
         help="Port to send packets to (default: 4705)",
     )
@@ -53,6 +57,7 @@ if __name__ == "__main__":
         "-i",
         "--ip-id",
         type=int,
+        metavar="ip_id",
         default=None,
         help="IP ID for the packet (default: random ID)",
     )
@@ -62,18 +67,21 @@ if __name__ == "__main__":
         "-m",
         "--message",
         type=str,
+        metavar="msg",
         help="Message to send",
     )
     group.add_argument(
         "-w",
         "--website",
         type=str,
+        metavar="url",
         help="Website URL to ask to open",
     )
     group.add_argument(
         "-c",
         "--command",
         type=str,
+        metavar="command",
         help="Command to execute on the target",
     )
     group.add_argument(
@@ -104,7 +112,7 @@ if __name__ == "__main__":
     teacher_ip = args.teacher_ip
     teacher_port = args.teacher_port
     target = args.target
-    port = args.port
+    port = args.target_port
 
     try:
         if args.message:
