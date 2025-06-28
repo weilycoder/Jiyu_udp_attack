@@ -10,7 +10,7 @@ The script uses Scapy for packet manipulation and sending.
 """
 
 import argparse
-from os import name
+import binascii
 
 from sender import broadcast_packet
 from packet import pkg_message, pkg_shutdown, pkg_rename, pkg_website, pkg_execute
@@ -107,6 +107,12 @@ if __name__ == "__main__":
         metavar=("name", "name_id"),
         help="Rename the target machine",
     )
+    group.add_argument(
+        "--hex",
+        type=str,
+        metavar="hex_data",
+        help="Hexadecimal string to send as a raw packet",
+    )
 
     args = parser.parse_args()
     teacher_ip = args.teacher_ip
@@ -144,6 +150,8 @@ if __name__ == "__main__":
         elif args.rename:
             name, name_id = args.rename
             payload = pkg_rename(name, int(name_id))
+        elif args.hex:
+            payload = binascii.unhexlify(args.hex.replace(" ", ""))
         else:
             raise ValueError("Either message or website must be provided")
 
