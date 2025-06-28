@@ -19,7 +19,7 @@
 使用 `python Jiyu_udp_attack -h` 来获取帮助信息：
 
 ```
-usage: Jiyu_udp_attack [-h] -s TEACHER_IP -t TARGET [-p PORT] (-m MESSAGE | -w WEBSITE | -c COMMAND)
+usage: Jiyu_udp_attack [-h] -s TEACHER_IP [-f TEACHER_PORT] -t TARGET [-p PORT] [-i IP_ID] (-m MESSAGE | -w WEBSITE | -c COMMAND | -r [timeout [message] ...])
 
 Jiyu Attack Script
 
@@ -27,14 +27,19 @@ options:
   -h, --help            show this help message and exit
   -s, --teacher-ip TEACHER_IP
                         Teacher's IP address
+  -f, --teacher-port TEACHER_PORT
+                        Teacher's port (default to random port)
   -t, --target TARGET   Target IP address
   -p, --port PORT       Port to send packets to (default: 4705)
+  -i, --ip-id IP_ID     IP ID for the packet (default: random ID)
   -m, --message MESSAGE
                         Message to send
   -w, --website WEBSITE
                         Website URL to ask to open
   -c, --command COMMAND
                         Command to execute on the target
+  -r, --reboot [timeout [message] ...]
+                        Reboot the target machine, optionally with a timeout and message
 
 Github Repositories: https://github.com/weilycoder/Jiyu_udp_attack/tree/main/
 ```
