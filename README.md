@@ -65,13 +65,18 @@ Attack Action:
 Github Repositories: https://github.com/weilycoder/Jiyu_udp_attack/tree/main/
 ```
 
-其中目标 ip 的指定使用了 [ht0Ruial/Jiyu_udp_attack](https://github.com/ht0Ruial/Jiyu_udp_attack/) 的创意，可以：
+其中目标 ip 的指定，可以：
 
 + 指定具体 ip，如 `192.168.3.103`；
-+ 指定 ip 范围，如 `192.168.3.100-150`；
-+ 指定 ip 段，如 `192.168.3.0/24`。
++ 指定 ip 范围，如 `192.168.3.100-150`。
 
 最多指定 65536 个不同 ip。
+
+但是，更推荐的行为是：
+
++ 指定广播地址，如 `192.168.3.255`；
++ 指定 ip 段，如 `192.168.3.0/24`，这将被转换到广播地址 `192.168.3.255`；
++ 使用极域的组播地址 `224.50.50.42`。
 
 ## Jiyu API
 

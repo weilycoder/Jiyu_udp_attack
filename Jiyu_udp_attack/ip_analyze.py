@@ -44,19 +44,14 @@ def ip_analyze(ip: str) -> list[str]:
                 if not mask.isdigit():
                     raise ValueError(f"Invalid subnet mask: {mask}")
                 mask = int(mask)
-                if mask < 0 or mask > 32:
-                    raise ValueError(f"Subnet mask out of range: {mask}")
-                if mask < 16:
-                    raise ValueError(f"Subnet mask too small: {mask}")
+                if mask not in range(0, 32, 8):
+                    raise ValueError(f"Invalid subnet mask: {mask}")
             case _:
                 raise ValueError(f"Invalid IP address format: {ip}")
         ip_tuple = ip_to_tuple(ip_addr)
         ip32 = ip_tuple[0] << 24 | ip_tuple[1] << 16 | ip_tuple[2] << 8 | ip_tuple[3]
-        ip32 &= (0xFFFFFFFF >> (32 - mask)) << (32 - mask)
-        return [
-            f"{(i >> 24) & 0xFF}.{(i >> 16) & 0xFF}.{(i >> 8) & 0xFF}.{i & 0xFF}"
-            for i in range(ip32 + 1, ip32 | ((1 << (32 - mask)) - 1))
-        ]
+        ip32 |= (1 << (32 - mask)) - 1
+        return [f"{(ip32 >> 24) & 0xFF}.{(ip32 >> 16) & 0xFF}.{(ip32 >> 8) & 0xFF}.{ip32 & 0xFF}"]
     if "-" in ip:
         ip_range_tuple = ip.split(".")
         if len(ip_range_tuple) != 4:
