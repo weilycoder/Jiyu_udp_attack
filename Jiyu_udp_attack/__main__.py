@@ -12,8 +12,58 @@ The script uses Scapy for packet manipulation and sending.
 import argparse
 import binascii
 
+from typing import Any, Sequence, cast
+
 from sender import broadcast_packet
 from packet import pkg_message, pkg_shutdown, pkg_rename, pkg_website, pkg_execute
+
+
+class ModeOptionalAction(argparse.Action):
+    """
+    Custom action for handling optional arguments in argparse.
+    This action allows the user to specify a mode (e.g., --max or --min) for the program execution.
+    """
+
+    def __init__(self, option_strings: Sequence[str], dest: str, modes: Sequence[str], **kwargs: Any):
+        self.modes = list(modes)
+
+        if any("-" in mode for mode in self.modes):
+            raise ValueError("Modes cannot contain '-' characters. Please use a different character.")
+
+        _option_strings = []
+        for option in option_strings:
+            _option_strings.append(option)
+
+            for mode in self.modes:
+                if option.startswith("--"):
+                    if option.startswith(f"--{mode}-"):
+                        raise ValueError(
+                            f"Option '{option}' cannot start with '--{mode}-'. "
+                            "Please use a different prefix for modes."
+                        )
+                    _option_strings.append(f"--{mode}-{option[2:]}")
+
+        return super().__init__(_option_strings, dest, **kwargs)
+
+    def __call__(
+        self,
+        parser: argparse.ArgumentParser,
+        namespace: argparse.Namespace,
+        values: Any,
+        option_string: str | None = None,
+    ):
+        if option_string in self.option_strings:
+            option_string = cast(str, option_string)
+            if option_string.startswith("--"):
+                mode = option_string.split("-")[2]
+                if mode not in self.modes:
+                    mode = None
+            else:
+                mode = None
+            setattr(namespace, self.dest, (mode, values))
+
+    def format_usage(self) -> str:
+        return " | ".join(self.option_strings)
 
 
 if __name__ == "__main__":
