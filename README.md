@@ -19,11 +19,12 @@
 使用 `python Jiyu_udp_attack -h` 来获取帮助信息：
 
 ```
-usage: Jiyu_udp_attack [-h] -f ip [-fp port] -t ip [-tp port] [-i ip_id]
-                       (-m msg | -w url | -c command |
-                       -s [timeout [message ...]] |
-                       -r [timeout [message ...]] | -n name name_id |
-                       --hex hex_data)
+usage: Jiyu_udp_attack [-h] [-f <ip>] [-fp <port>] -t <ip> [-tp <port>]
+                       [-i <ip_id>] (-m <msg> | -w <url> | -c <command> |
+                       -e <program> [<args> ...] |
+                       -s [<timeout> [<message> ...]] |
+                       -r [<timeout> [<message> ...]] | -n <name> <name_id> |
+                       --hex <hex_data>)
 
 Jiyu Attack Script
 
@@ -33,30 +34,33 @@ options:
 Network Configuration:
   Specify the network configuration for the attack.
 
-  -f, --teacher-ip ip   Teacher's IP address
-  -fp, --teacher-port port
+  -f, --teacher-ip <ip>
+                        Teacher's IP address
+  -fp, --teacher-port <port>
                         Teacher's port (default to random port)
-  -t, --target ip       Target IP address
-  -tp, --target-port port
+  -t, --target <ip>     Target IP address
+  -tp, --target-port <port>
                         Port to send packets to (default: 4705)
-  -i, --ip-id ip_id     IP ID for the packet (default: random ID)
+  -i, --ip-id <ip_id>   IP ID for the packet (default: random ID)
 
 Attack Action:
   Specify the action to perform on the target machine.
 
-  -m, --message msg     Message to send
-  -w, --website url     Website URL to ask to open
-  -c, --command command
+  -m, --message <msg>   Message to send
+  -w, --website <url>   Website URL to ask to open
+  -c, --command <command>
                         Command to execute on the target
-  -s, --shutdown [timeout [message ...]]
+  -e, --execute, --minimize-execute, --maximize-execute <program> [<args> ...]
+                        Execute a program with arguments on the target machine
+  -s, --shutdown [<timeout> [<message> ...]]
                         Shutdown the target machine, optionally with a timeout
                         and message
-  -r, --reboot [timeout [message ...]]
+  -r, --reboot [<timeout> [<message> ...]]
                         Reboot the target machine, optionally with a timeout
                         and message
-  -n, --rename name name_id
+  -n, --rename <name> <name_id>
                         Rename the target machine
-  --hex hex_data        Hexadecimal string to send as a raw packet
+  --hex <hex_data>      Hexadecimal string to send as a raw packet
 
 Github Repositories: https://github.com/weilycoder/Jiyu_udp_attack/tree/main/
 ```

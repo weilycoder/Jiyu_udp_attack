@@ -78,7 +78,7 @@ if __name__ == "__main__":
         "-f",
         "--teacher-ip",
         type=str,
-        metavar="ip",
+        metavar="<ip>",
         default=None,
         help="Teacher's IP address",
     )
@@ -86,7 +86,7 @@ if __name__ == "__main__":
         "-fp",
         "--teacher-port",
         type=int,
-        metavar="port",
+        metavar="<port>",
         default=None,
         help="Teacher's port (default to random port)",
     )
@@ -94,7 +94,7 @@ if __name__ == "__main__":
         "-t",
         "--target",
         type=str,
-        metavar="ip",
+        metavar="<ip>",
         required=True,
         help="Target IP address",
     )
@@ -102,7 +102,7 @@ if __name__ == "__main__":
         "-tp",
         "--target-port",
         type=int,
-        metavar="port",
+        metavar="<port>",
         default=4705,
         help="Port to send packets to (default: 4705)",
     )
@@ -110,7 +110,7 @@ if __name__ == "__main__":
         "-i",
         "--ip-id",
         type=int,
-        metavar="ip_id",
+        metavar="<ip_id>",
         default=None,
         help="IP ID for the packet (default: random ID)",
     )
@@ -123,21 +123,21 @@ if __name__ == "__main__":
         "-m",
         "--message",
         type=str,
-        metavar="msg",
+        metavar="<msg>",
         help="Message to send",
     )
     attack_action.add_argument(
         "-w",
         "--website",
         type=str,
-        metavar="url",
+        metavar="<url>",
         help="Website URL to ask to open",
     )
     attack_action.add_argument(
         "-c",
         "--command",
         type=str,
-        metavar="command",
+        metavar="<command>",
         help="Command to execute on the target",
     )
     temp = attack_action.add_argument(
@@ -147,7 +147,7 @@ if __name__ == "__main__":
         default=None,
         action=ModeOptionalAction,
         modes=("minimize", "maximize"),
-        metavar=("program", "args"),
+        metavar=("<program>", "<args>"),
         help="Execute a program with arguments on the target machine",
     )
     attack_action.add_argument(
@@ -155,7 +155,7 @@ if __name__ == "__main__":
         "--shutdown",
         nargs="*",
         default=None,
-        metavar=("timeout", "message"),
+        metavar=("<timeout>", "<message>"),
         help="Shutdown the target machine, optionally with a timeout and message",
     )
     attack_action.add_argument(
@@ -163,20 +163,20 @@ if __name__ == "__main__":
         "--reboot",
         nargs="*",
         default=None,
-        metavar=("timeout", "message"),
+        metavar=("<timeout>", "<message>"),
         help="Reboot the target machine, optionally with a timeout and message",
     )
     attack_action.add_argument(
         "-n",
         "--rename",
         nargs=2,
-        metavar=("name", "name_id"),
+        metavar=("<name>", "<name_id>"),
         help="Rename the target machine",
     )
     attack_action.add_argument(
         "--hex",
         type=str,
-        metavar="hex_data",
+        metavar="<hex_data>",
         help="Hexadecimal string to send as a raw packet",
     )
 
