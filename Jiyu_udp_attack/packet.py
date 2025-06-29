@@ -161,6 +161,21 @@ def pkg_close_windows(timeout: Optional[int] = None, message: str = "") -> bytes
     return head + data + b"\x00" * 258
 
 
+def pkg_close_top_window() -> bytes:
+    """
+    Packages a command to close the top window into a specific byte format, including a header.
+
+    Returns:
+        bytes: The packaged command to close the top window as a byte array, including a header.
+    """
+    head = (
+        b"DMOC\x00\x00\x01\x00n\x03\x00\x00"
+        + secrets.token_bytes(16)
+        + b" N\x00\x00\xc0\xa8\x01\x9ba\x03\x00\x00a\x03\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x0e\x00\x00\x00"
+    )
+    return head + b"\x00" * 850
+
+
 def pkg_rename(name: str, name_id: int = 0) -> bytes:
     """
     Packages a command to rename a file or directory into a specific byte format, including a header.
