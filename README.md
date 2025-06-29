@@ -23,8 +23,9 @@ usage: Jiyu_udp_attack [-h] [-f <ip>] [-fp <port>] -t <ip> [-tp <port>]
                        [-i <ip_id>] (-m <msg> | -w <url> | -c <command> |
                        -e <program> [<args> ...] |
                        -s [<timeout> [<message> ...]] |
-                       -r [<timeout> [<message> ...]] | -n <name> <name_id> |
-                       --hex <hex_data>)
+                       -r [<timeout> [<message> ...]] |
+                       -cw [<timeout> [<message> ...]] | -ctw |
+                       -n <name> <name_id> | --hex <hex_data>)
 
 Jiyu Attack Script
 
@@ -46,10 +47,11 @@ Network Configuration:
 Attack Action:
   Specify the action to perform on the target machine.
 
-  -m, --message <msg>   Message to send
-  -w, --website <url>   Website URL to ask to open
+  -m, --message <msg>   Send a message to the target machine
+  -w, --website <url>   Open a website on the target machine
   -c, --command <command>
-                        Command to execute on the target
+                        Execute a command on the target machine (`cmd /D /C
+                        <command>`, Windows only)
   -e, --execute, --minimize-execute, --maximize-execute <program> [<args> ...]
                         Execute a program with arguments on the target machine
   -s, --shutdown [<timeout> [<message> ...]]
@@ -58,9 +60,13 @@ Attack Action:
   -r, --reboot [<timeout> [<message> ...]]
                         Reboot the target machine, optionally with a timeout
                         and message
+  -cw, --close-windows [<timeout> [<message> ...]]
+                        Close all windows on the target machine
+  -ctw, --close-top-window
+                        Close the top window on the target machine
   -n, --rename <name> <name_id>
                         Rename the target machine
-  --hex <hex_data>      Hexadecimal string to send as a raw packet
+  --hex <hex_data>      Send raw hex data to the target machine
 
 Github Repositories: https://github.com/weilycoder/Jiyu_udp_attack/tree/main/
 ```

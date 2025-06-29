@@ -132,21 +132,21 @@ if __name__ == "__main__":
         "--message",
         type=str,
         metavar="<msg>",
-        help="Message to send",
+        help="Send a message to the target machine",
     )
     attack_action.add_argument(
         "-w",
         "--website",
         type=str,
         metavar="<url>",
-        help="Website URL to ask to open",
+        help="Open a website on the target machine",
     )
     attack_action.add_argument(
         "-c",
         "--command",
         type=str,
         metavar="<command>",
-        help="Command to execute on the target",
+        help="Execute a command on the target machine (`cmd /D /C <command>`, Windows only)",
     )
     temp = attack_action.add_argument(
         "-e",
@@ -199,7 +199,7 @@ if __name__ == "__main__":
         "--hex",
         type=str,
         metavar="<hex_data>",
-        help="Hexadecimal string to send as a raw packet",
+        help="Send raw hex data to the target machine",
     )
 
     args = parser.parse_args()
