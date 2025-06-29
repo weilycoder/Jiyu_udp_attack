@@ -86,7 +86,7 @@ Example usage:
     python Jiyu_udp_attack -t 192.168.106.100 -n hacker 1000
     python Jiyu_udp_attack -t 192.168.106.100 --hex 444d4f43000001002a020000
     python Jiyu_udp_attack -t 192.168.106.100 --pkg ":{rand16.size_2}"
-    python Jiyu_udp_attack -t 192.168.106.100 --pkg ":{0.little_4}" 1024
+    python Jiyu_udp_attack -t 192.168.106.100 --pkg ":{0.int.little_4}" 1024
     python Jiyu_udp_attack -t 192.168.106.100 --pkg ":{0}{1.size_800}" 4d hello
     python Jiyu_udp_attack -t 192.168.106.100 --pkg test.txt 1024 hello
 ```
@@ -110,20 +110,31 @@ Example usage:
 
 `--pkg` 用于发送格式化的数据包，可以指定参数，首个参数作为格式化字符串，其余参数被应用于字符串的格式化。格式化字符串的内容为 16 进制编码的数据包，因此需要保证应用格式化后字符串为合法的 16 进制编码串。
 
-处理时使用了自定义的类型包装参数，如果一个参数可以解释为十进制数，则它的类型为 `int`，否则为 `str`；此外，还定义了 `rand16` 作为可用变量。
+处理时使用了自定义的类型包装参数，定义了 `HexInt` 和 `HexStr` 两个类型，输入的参数均作为 `HexStr`；此外，还定义了 `rand16` 作为可用变量。
 
 目前支持的属性包括（以位置 `0` 为例）：
 
-- `int`
+- `HexInt`
   + `{0}`：直接输出十进制数字，无前导零。
   + `{0.big_<size>}`：将数转为 `<size>` 位字节，大端序编码；
-  + `{0.little_<size>}`：将数转为 `<size>` 位字节，小端序编码。
-- `str`
+  + `{0.little_<size>}`：将数转为 `<size>` 位字节，小端序编码；
+  + `{0.add_<value>}`：将数加 `<value>`；
+  + `{0.sub_<value>}`：将数减 `<value>`，请注意 `HexInt` 不支持负数；
+  + `{0.mul_<value>}`：将数乘 `<value>`；
+  + `{0.div_<value>}`：将数整除 `<value>`；
+  + `{0.mod_<value>}`：将数对 `<value>` 取模。
+- `HexStr`
   + `{0}`：直接输出字符串本身，因此此时应保证字符串为 16 进制码；
-  + `{0.size_<size>}`：将字符串转化为 `utf-16le` 编码，并填充 `\x00` 到 `<size>` 位。
+  + `{0.len}`：返回字符串的长度；
+  + `{0.hex}`：将字符串转化为 `utf-16le` 编码；
+  + `{0.int}`：将字符串解释为数；
+  + `{0.int_<base>}`：将字符串解释为 `<base>` 进制数；
+  + `{0.size_<size>}`：将字符串转化为 `utf-16le` 编码，并填充 `\x00` 到 `<size>` 位，若超过 `<size>` 位则报错。
 - `rand16`
   + `{rand16}`：生成一个随机字节；
   + `{rand16.size_<size>}`：生成 `<size>` 个随机字节。
+
+注意，`rand16` 的返回值为 `str`，而非 `HexStr`。
 
 ## Jiyu API
 

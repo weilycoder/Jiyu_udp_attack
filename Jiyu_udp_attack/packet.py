@@ -2,6 +2,8 @@
 This module is used to forge Jiyu UDP packets.
 """
 
+from __future__ import annotations
+
 import binascii
 import secrets
 
@@ -242,12 +244,22 @@ class HexInt:
             raise ValueError("Value must be a non-negative integer")
         self.value = value
 
-    def __getattr__(self, name: str) -> str:
+    def __getattr__(self, name: str) -> HexStr | HexInt:
         try:
             if name.startswith("little_"):
-                return self.value.to_bytes(int(name[7:]), "little").hex()
+                return HexStr(self.value.to_bytes(int(name[7:]), "little").hex())
             if name.startswith("big_"):
-                return self.value.to_bytes(int(name[4:]), "big").hex()
+                return HexStr(self.value.to_bytes(int(name[4:]), "big").hex())
+            if name.startswith("add_"):
+                return HexInt(self.value + int(name[4:]))
+            if name.startswith("sub_"):
+                return HexInt(self.value - int(name[4:]))
+            if name.startswith("mul_"):
+                return HexInt(self.value * int(name[4:]))
+            if name.startswith("div_"):
+                return HexInt(self.value // int(name[4:]))
+            if name.startswith("mod_"):
+                return HexInt(self.value % int(name[4:]))
         except ValueError:
             pass
 
@@ -268,10 +280,18 @@ class HexStr:
     def __init__(self, value: str = ""):
         self.value = str(value)
 
-    def __getattr__(self, name: str) -> str:
+    def __getattr__(self, name: str) -> HexStr | HexInt:
         try:
+            if name == "len":
+                return HexInt(len(self.value))
+            if name == "hex":
+                return HexStr(self.value.encode("utf-8").hex())
+            if name == "int":
+                return HexInt(int(self.value))
+            if name.startswith("int_"):
+                return HexInt(int(self.value, int(name[4:])))
             if name.startswith("size_"):
-                return format_data(self.value, int(name[5:])).hex()
+                return HexStr(format_data(self.value, int(name[5:])).hex())
         except ValueError:
             pass
 
@@ -295,11 +315,4 @@ def pkg_customize(format_str: str, *args: str) -> bytes:
     Returns:
         bytes: The packaged command as a byte array, including a header and formatted data.
     """
-    user_args = []
-    for arg in args:
-        try:
-            user_args.append(HexInt(int(arg)))
-        except ValueError:
-            user_args.append(HexStr(arg))
-
-    return binascii.unhexlify(format_str.format(*user_args, rand16=rand16))
+    return binascii.unhexlify(format_str.format(*map(HexStr, args), rand16=rand16))
