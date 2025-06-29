@@ -142,10 +142,12 @@ def send_packet(
         if src_port is not None or ip_id is not None:
             raise ValueError("If src_ip is None, src_port and ip_id must also be None.")
         client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        client.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         client.sendto(payload, (dst_ip, dst_port))
     else:
         client = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)
         client.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
+        client.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         packet = create_raw_udp_packet(src_ip, src_port, dst_ip, dst_port, payload, ip_id=ip_id)
         client.sendto(packet, (dst_ip, dst_port))
 
