@@ -1,6 +1,6 @@
 [project]
 name = "Jiyu-udp-attack"
-version = "0.5.0"
+version = "0.6.0"
 description = "Send packets to student machines disguised as Jiyu teacher machine"
 authors = [{ name = "weilycoder", email = "weily2009@outlook.com" }]
 license = "MIT"

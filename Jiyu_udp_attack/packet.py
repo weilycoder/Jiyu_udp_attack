@@ -211,8 +211,8 @@ class Rand16:
     """
 
     def __getattr__(self, name: str) -> str:
-        if name.startswith("bytes_"):
-            length = name[6:]
+        if name.startswith("size_"):
+            length = name[5:]
             if length.isdigit():
                 return secrets.token_bytes(int(length)).hex()
         raise AttributeError(f"Rand16 has no attribute '{name}'")
