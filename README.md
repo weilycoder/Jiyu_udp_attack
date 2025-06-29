@@ -25,7 +25,8 @@ usage: Jiyu_udp_attack [-h] [-f <ip>] [-fp <port>] -t <ip> [-tp <port>]
                        -s [<timeout> [<message> ...]] |
                        -r [<timeout> [<message> ...]] |
                        -cw [<timeout> [<message> ...]] | -ctw |
-                       -n <name> <name_id> | --hex <hex_data>)
+                       -n <name> <name_id> | --hex <hex_data> |
+                       --pkg <custom_data> [<args> ...])
 
 Jiyu Attack Script
 
@@ -67,6 +68,8 @@ Attack Action:
   -n, --rename <name> <name_id>
                         Rename the target machine
   --hex <hex_data>      Send raw hex data to the target machine
+  --pkg <custom_data> [<args> ...]
+                        Custom packet data to send
 
 Github Repositories: https://github.com/weilycoder/Jiyu_udp_attack/tree/main/
 ```

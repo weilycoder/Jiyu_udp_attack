@@ -12,6 +12,7 @@ try:
         pkg_rename,
         pkg_website,
         pkg_execute,
+        pkg_customize,
     )
 except ImportError:
     from sender import send_packet, broadcast_packet
@@ -23,6 +24,7 @@ except ImportError:
         pkg_rename,
         pkg_website,
         pkg_execute,
+        pkg_customize,
     )
 
 
@@ -36,4 +38,5 @@ __all__ = [
     "pkg_rename",
     "pkg_website",
     "pkg_execute",
+    "pkg_customize",
 ]

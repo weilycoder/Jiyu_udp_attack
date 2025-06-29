@@ -2,9 +2,22 @@
 This module is used to forge Jiyu UDP packets.
 """
 
+import binascii
 import secrets
 
 from typing import Literal, Optional
+
+
+__all__ = [
+    "pkg_message",
+    "pkg_execute",
+    "pkg_website",
+    "pkg_shutdown",
+    "pkg_close_windows",
+    "pkg_close_top_window",
+    "pkg_rename",
+    "pkg_customize",
+]
 
 
 def format_data(data: str, max_length: Optional[int] = None) -> bytes:
@@ -190,3 +203,103 @@ def pkg_rename(name: str, name_id: int = 0) -> bytes:
     head = b"GCMN\x00\x00\x01\x00D\x00\x00\x00f\xb1\xe4\x92?\x9a6J\x94:=\xa3\xbd\x97`A" + name_id.to_bytes(4, "little")
     data = format_data(name + "\x00", 64)
     return head + data
+
+
+class Rand16:
+    """
+    A class to generate random bytes of specified lengths, accessible as attributes.
+    """
+
+    def __getattr__(self, name: str) -> str:
+        if name.startswith("bytes_"):
+            length = name[6:]
+            if length.isdigit():
+                return secrets.token_bytes(int(length)).hex()
+        raise AttributeError(f"Rand16 has no attribute '{name}'")
+
+    def __getitem__(self, key: int) -> str:
+        if isinstance(key, int) and key > 0:
+            return secrets.token_bytes(key).hex()
+        raise TypeError(f"Key must be a positive integer, got {key}")
+
+    def __str__(self) -> str:
+        return secrets.token_bytes(1).hex()
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
+
+rand16 = Rand16()
+
+
+class HexInt:
+    """
+    A class to represent a non-negative integer with methods to access its byte representation in little-endian and big-endian formats.
+    """
+
+    def __init__(self, value: int = 0):
+        if not isinstance(value, int) or value < 0:
+            raise ValueError("Value must be a non-negative integer")
+        self.value = value
+
+    def __getattr__(self, name: str) -> str:
+        try:
+            if name.startswith("little_"):
+                return self.value.to_bytes(int(name[7:]), "little").hex()
+            if name.startswith("big_"):
+                return self.value.to_bytes(int(name[4:]), "big").hex()
+        except ValueError:
+            pass
+
+        raise AttributeError(f"HexInt has no attribute '{name}'")
+
+    def __str__(self) -> str:
+        return str(self.value)
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
+
+class HexStr:
+    """
+    A class to represent a string with methods to access its byte representation in hexadecimal format.
+    """
+
+    def __init__(self, value: str = ""):
+        self.value = str(value)
+
+    def __getattr__(self, name: str) -> str:
+        try:
+            if name.startswith("size_"):
+                return format_data(self.value, int(name[5:])).hex()
+        except ValueError:
+            pass
+
+        raise AttributeError(f"HexStr has no attribute '{name}'")
+
+    def __str__(self) -> str:
+        return self.value
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
+
+def pkg_customize(format_str: str, *args: str) -> bytes:
+    """
+    Packages a custom command into a specific byte format based on a format string and arguments.
+
+    Args:
+        format_str (str): The format string defining the structure of the command.
+        *args (str): The arguments to be formatted according to the format string.
+
+    Returns:
+        bytes: The packaged command as a byte array, including a header and formatted data.
+    """
+    user_args = []
+    for arg in args:
+        try:
+            user_args.append(HexInt(int(arg)))
+        except ValueError:
+            user_args.append(HexStr(arg))
+
+    return binascii.unhexlify(format_str.format(*user_args, rand16=rand16))

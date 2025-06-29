@@ -23,6 +23,7 @@ from packet import (
     pkg_rename,
     pkg_website,
     pkg_execute,
+    pkg_customize,
 )
 
 
@@ -201,6 +202,12 @@ if __name__ == "__main__":
         metavar="<hex_data>",
         help="Send raw hex data to the target machine",
     )
+    attack_action.add_argument(
+        "--pkg",
+        nargs="+",
+        metavar=("<custom_data>", "<args>"),
+        help="Custom packet data to send",
+    )
 
     args = parser.parse_args()
     teacher_ip = args.teacher_ip
@@ -261,6 +268,9 @@ if __name__ == "__main__":
             payload = pkg_rename(name, int(name_id))
         elif args.hex:
             payload = binascii.unhexlify(args.hex.replace(" ", ""))
+        elif args.pkg:
+            format_str, *user_args = args.pkg
+            payload = pkg_customize(format_str, *user_args)
         else:
             raise ValueError("Program logic error, please report this issue: No valid action specified.")
 
