@@ -14,18 +14,30 @@ import binascii
 
 from typing import Any, Optional, Sequence, cast
 
-from sender import broadcast_packet
-from packet import (
-    pkg_close_top_window,
-    pkg_close_windows,
-    pkg_message,
-    pkg_shutdown,
-    pkg_rename,
-    pkg_website,
-    pkg_execute,
-    pkg_customize,
-)
-
+try:
+    from sender import broadcast_packet
+    from packet import (
+        pkg_close_top_window,
+        pkg_close_windows,
+        pkg_message,
+        pkg_shutdown,
+        pkg_rename,
+        pkg_website,
+        pkg_execute,
+        pkg_customize,
+    )
+except ImportError:
+    from Jiyu_udp_attack.sender import broadcast_packet
+    from Jiyu_udp_attack.packet import (
+        pkg_close_top_window,
+        pkg_close_windows,
+        pkg_message,
+        pkg_shutdown,
+        pkg_rename,
+        pkg_website,
+        pkg_execute,
+        pkg_customize,
+    )
 
 class ModeOptionalAction(argparse.Action):
     """
