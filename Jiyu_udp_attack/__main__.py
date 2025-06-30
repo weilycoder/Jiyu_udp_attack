@@ -12,7 +12,7 @@ The script uses Scapy for packet manipulation and sending.
 import argparse
 import binascii
 
-from typing import Any, Sequence, cast
+from typing import Any, Optional, Sequence, cast
 
 from sender import broadcast_packet
 from packet import (
@@ -59,7 +59,7 @@ class ModeOptionalAction(argparse.Action):
         parser: argparse.ArgumentParser,
         namespace: argparse.Namespace,
         values: Any,
-        option_string: str | None = None,
+        option_string: Optional[str] = None,
     ):
         if option_string in self.option_strings:
             option_string = cast(str, option_string)
@@ -242,44 +242,45 @@ if __name__ == "__main__":
         elif args.close_top_window:
             payload = pkg_close_top_window()
         elif args.execute:
-            match args.execute:
-                case [mode, [program]]:
-                    args_list = ""
-                case [mode, [program, args_list]]:
-                    pass
-                case _:
+            if len(args.execute) != 2:
+                parser.error("Invalid execute arguments: expected [program] or [program, args_list]")
+            else:
+                mode, args_list = args.execute
+                args_list = cast(Sequence[str], args_list)
+                if len(args_list) == 1:
+                    program, args_list = args_list[0], ""
+                elif len(args_list) == 2:
+                    program, args_list = args_list
+                else:
                     parser.error("Invalid execute arguments: expected [program] or [program, args_list]")
             payload = pkg_execute(program, args_list, "normal" if mode is None else mode)
         elif args.shutdown is not None:
-            match args.shutdown:
-                case []:
-                    payload = pkg_shutdown()
-                case [timeout]:
-                    payload = pkg_shutdown(timeout=int(timeout))
-                case [timeout, message]:
-                    payload = pkg_shutdown(timeout=int(timeout), message=message)
-                case _:
-                    parser.error("Invalid shutdown arguments: expected [timeout] or [timeout, message]")
+            if len(args.shutdown) == 0:
+                payload = pkg_shutdown()
+            elif len(args.shutdown) == 1:
+                payload = pkg_shutdown(timeout=int(args.shutdown[0]))
+            elif len(args.shutdown) == 2:
+                payload = pkg_shutdown(timeout=int(args.shutdown[0]), message=args.shutdown[1])
+            else:
+                parser.error("Invalid shutdown arguments: expected [timeout] or [timeout, message]")
         elif args.reboot is not None:
-            match args.reboot:
-                case []:
-                    payload = pkg_shutdown(reboot=True)
-                case [timeout]:
-                    payload = pkg_shutdown(timeout=int(timeout), reboot=True)
-                case [timeout, message]:
-                    payload = pkg_shutdown(timeout=int(timeout), message=message, reboot=True)
-                case _:
-                    parser.error("Invalid reboot arguments: expected [timeout] or [timeout, message]")
+            if len(args.reboot) == 0:
+                payload = pkg_shutdown(reboot=True)
+            elif len(args.reboot) == 1:
+                payload = pkg_shutdown(timeout=int(args.reboot[0]), reboot=True)
+            elif len(args.reboot) == 2:
+                payload = pkg_shutdown(timeout=int(args.reboot[0]), message=args.reboot[1], reboot=True)
+            else:
+                parser.error("Invalid reboot arguments: expected [timeout] or [timeout, message]")
         elif args.close_windows is not None:
-            match args.close_windows:
-                case []:
-                    payload = pkg_close_windows()
-                case [timeout]:
-                    payload = pkg_close_windows(timeout=int(timeout))
-                case [timeout, message]:
-                    payload = pkg_close_windows(timeout=int(timeout), message=message)
-                case _:
-                    parser.error("Invalid close windows arguments: expected [timeout] or [timeout, message]")
+            if len(args.close_windows) == 0:
+                payload = pkg_close_windows()
+            elif len(args.close_windows) == 1:
+                payload = pkg_close_windows(timeout=int(args.close_windows[0]))
+            elif len(args.close_windows) == 2:
+                payload = pkg_close_windows(timeout=int(args.close_windows[0]), message=args.close_windows[1])
+            else:
+                parser.error("Invalid close windows arguments: expected [timeout] or [timeout, message]")
         elif args.rename:
             name, name_id = args.rename
             payload = pkg_rename(name, int(name_id))

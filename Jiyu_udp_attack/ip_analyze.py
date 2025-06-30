@@ -3,7 +3,10 @@ This module provides functions to analyze IP addresses and ranges, converting th
 """
 
 
-def ip_to_tuple(ip: str) -> tuple[int, int, int, int]:
+from typing import List, Tuple
+
+
+def ip_to_tuple(ip: str) -> Tuple[int, int, int, int]:
     """
     Converts an IP address string to a tuple of four integers.
 
@@ -25,7 +28,7 @@ def ip_to_tuple(ip: str) -> tuple[int, int, int, int]:
 
 
 # pylint: disable=too-many-branches
-def ip_analyze(ip: str) -> list[str]:
+def ip_analyze(ip: str) -> List[str]:
     """
     Analyzes an IP address or range and returns a list of valid IP addresses.
 
@@ -39,15 +42,15 @@ def ip_analyze(ip: str) -> list[str]:
         raise TypeError(f"Expected string, got {type(ip).__name__}")
     ip = ip.replace(" ", "")
     if "/" in ip:
-        match ip.split("/"):
-            case [ip_addr, mask]:
-                if not mask.isdigit():
-                    raise ValueError(f"Invalid subnet mask: {mask}")
-                mask = int(mask)
-                if mask not in range(0, 32, 8):
-                    raise ValueError(f"Invalid subnet mask: {mask}")
-            case _:
-                raise ValueError(f"Invalid IP address format: {ip}")
+        try:
+            ip_addr, mask = ip.split("/")
+            assert mask.isdigit(), f"Invalid subnet mask: {mask}"
+            mask = int(mask)
+            assert mask in range(0, 32, 8), f"Invalid subnet mask: {mask}"
+        except ValueError:
+            raise ValueError(f"Invalid IP address format: {ip}") from None
+        except AssertionError as e:
+            raise ValueError(str(e)) from None
         ip_tuple = ip_to_tuple(ip_addr)
         ip32 = ip_tuple[0] << 24 | ip_tuple[1] << 16 | ip_tuple[2] << 8 | ip_tuple[3]
         ip32 |= (1 << (32 - mask)) - 1
@@ -59,24 +62,17 @@ def ip_analyze(ip: str) -> list[str]:
         ip_count = 1
         ip_range: list[tuple[int, int]] = []
         for i in ip_range_tuple:
-            match i.split("-"):
-                case [single]:
-                    if not single.isdigit():
-                        raise ValueError(f"Invalid IP address range format: {ip}")
-                    single = int(single)
-                    if single < 0 or single > 255:
-                        raise ValueError(f"IP address out of range: {single}")
-                    ip_range.append((single, single))
-                case [start, end]:
-                    if not (start.isdigit() and end.isdigit()):
-                        raise ValueError(f"Invalid IP address range format: {ip}")
-                    start = int(start)
-                    end = int(end)
-                    if start < 0 or start > 255 or end < 0 or end > 255 or start > end:
-                        raise ValueError(f"Invalid IP address range: {start}-{end}")
-                    ip_range.append((start, end))
-                case _:
-                    raise ValueError(f"Invalid IP address range format: {ip}")
+            rg = i.split("-")
+            if len(rg) ==1:
+                rg.append(rg[0])
+            if len(rg) != 2:
+                raise ValueError(f"Invalid IP address range format: {ip}")
+            if not all(x.isdigit() for x in rg):
+                raise ValueError(f"Invalid IP address range format: {ip}")
+            start, end = int(rg[0]), int(rg[1])
+            if start < 0 or start > 255 or end < 0 or end > 255 or start > end:
+                raise ValueError(f"Invalid IP address range: {start}-{end}")
+            ip_range.append((start, end))
             ip_count *= ip_range[-1][1] - ip_range[-1][0] + 1
         if ip_count > 65536:
             raise ValueError(f"IP address range too large: {ip_count} addresses")

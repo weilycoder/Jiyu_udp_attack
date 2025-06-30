@@ -1,14 +1,15 @@
-[project]
+[tool.poetry]
 name = "Jiyu-udp-attack"
 version = "1.0.0"
 description = "Send packets to student machines disguised as Jiyu teacher machine"
-authors = [{ name = "weilycoder", email = "weily2009@outlook.com" }]
+authors = ["weilycoder <weily2009@outlook.com>"]
 license = "MIT"
 readme = "README.md"
-requires-python = ">=3.13,<4"
-dependencies = []
+
+[tool.poetry.dependencies]
+python = ">=3.8,<4"
 
 
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
+requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

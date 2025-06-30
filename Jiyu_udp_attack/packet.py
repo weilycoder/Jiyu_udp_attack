@@ -7,7 +7,7 @@ from __future__ import annotations
 import binascii
 import secrets
 
-from typing import Literal, Optional
+from typing import Literal, Optional, Union
 
 
 __all__ = [
@@ -91,15 +91,14 @@ def pkg_execute(
     )
     data0 = format_data(executable_file, 512)
     data1 = format_data(arguments, 254)
-    match mode:
-        case "normal":
-            data2 = b"\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00"
-        case "minimize":
-            data2 = b"\x01\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00"
-        case "maximize":
-            data2 = b"\x02\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00"
-        case _:
-            raise ValueError(f"Invalid mode: {mode}")
+    if mode == "normal":
+        data2 = b"\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+    elif mode == "minimize":
+        data2 = b"\x01\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+    elif mode == "maximize":
+        data2 = b"\x02\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+    else:
+        raise ValueError(f"Invalid mode: {mode}")
     return head + data0 + data1 + b"\x00" * 66 + data2
 
 
@@ -244,7 +243,7 @@ class HexInt:
             raise ValueError("Value must be a non-negative integer")
         self.value = value
 
-    def __getattr__(self, name: str) -> HexStr | HexInt:
+    def __getattr__(self, name: str) -> Union[HexStr, HexInt]:
         try:
             if name.startswith("little_"):
                 return HexStr(self.value.to_bytes(int(name[7:]), "little").hex())
@@ -280,7 +279,7 @@ class HexStr:
     def __init__(self, value: str = ""):
         self.value = str(value)
 
-    def __getattr__(self, name: str) -> HexStr | HexInt:
+    def __getattr__(self, name: str) -> Union[HexStr, HexInt]:
         try:
             if name == "len":
                 return HexInt(len(self.value))
