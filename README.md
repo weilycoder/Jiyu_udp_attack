@@ -18,57 +18,58 @@
 
 ```
 usage: Jiyu_udp_attack [-h] [-f <ip>] [-fp <port>] -t <ip> [-tp <port>]
-                       [-i <ip_id>]
-                       (-m <msg> | -w <url> | -c <command> | -e <program> [<args> ...] | -s [<timeout> [<message> ...]] | -r [<timeout> [<message> ...]] | -cw [<timeout> [<message> ...]] | -ctw | -n <name> <name_id> | --hex <hex_data> | --pkg <custom_data> [<args> ...])
+                       [-i <ip_id>] (-m <msg> | -w <url> | -c <command> |
+                       -e <program> [<args> ...] |
+                       -s [<timeout> [<message> ...]] |
+                       -r [<timeout> [<message> ...]] |
+                       -cw [<timeout> [<message> ...]] | -ctw |
+                       -n <name> <name_id> | --hex <hex_data> |
+                       --pkg <custom_data> [<args> ...])
 
 Jiyu Attack Script
 
-optional arguments:
+Github Repositories: https://github.com/weilycoder/Jiyu_udp_attack/tree/main/ 
+
+options:
   -h, --help            show this help message and exit
 
 Network Configuration:
   Specify the network configuration for the attack.
 
-  -f <ip>, --teacher-ip <ip>
+  -f, --teacher-ip <ip>
                         Teacher's IP address
-  -fp <port>, --teacher-port <port>
+  -fp, --teacher-port <port>
                         Teacher's port (default to random port)
-  -t <ip>, --target <ip>
-                        Target IP address
-  -tp <port>, --target-port <port>
+  -t, --target <ip>     Target IP address
+  -tp, --target-port <port>
                         Port to send packets to (default: 4705)
-  -i <ip_id>, --ip-id <ip_id>
-                        IP ID for the packet (default: random ID)
+  -i, --ip-id <ip_id>   IP ID for the packet (default: random ID)
 
 Attack Action:
   Specify the action to perform on the target machine. 
 
-  -m <msg>, --message <msg>
-                        Send a message to the target machine
-  -w <url>, --website <url>
-                        Open a website on the target machine
-  -c <command>, --command <command>
+  -m, --message <msg>   Send a message to the target machine
+  -w, --website <url>   Open a website on the target machine
+  -c, --command <command>
                         Execute a command on the target machine
                         (`cmd /D /C <command>`, Windows only)
-  -e <program> [<args> ...], --execute <program> [<args> ...], --minimize-execute <program> [<args> ...], --maximize-execute <program> [<args> ...]
+  -e, --execute, --minimize-execute, --maximize-execute <program> [<args> ...]
                         Execute a program with arguments on the target machine
-  -s [<timeout> [<message> ...]], --shutdown [<timeout> [<message> ...]]
+  -s, --shutdown [<timeout> [<message> ...]]
                         Shutdown the target machine,
                         optionally with a timeout and message
-  -r [<timeout> [<message> ...]], --reboot [<timeout> [<message> ...]]
+  -r, --reboot [<timeout> [<message> ...]]
                         Reboot the target machine,
                         optionally with a timeout and message
-  -cw [<timeout> [<message> ...]], --close-windows [<timeout> [<message> ...]]
+  -cw, --close-windows [<timeout> [<message> ...]]
                         Close all windows on the target machine
   -ctw, --close-top-window
                         Close the top window on the target machine
-  -n <name> <name_id>, --rename <name> <name_id>
+  -n, --rename <name> <name_id>
                         Rename the target machine
   --hex <hex_data>      Send raw hex data to the target machine
   --pkg <custom_data> [<args> ...]
                         Custom packet data to send
-
-Github Repositories: https://github.com/weilycoder/Jiyu_udp_attack/tree/main/ 
 
 Example usage:
     python Jiyu_udp_attack -t 192.168.106.100 -m "Hello World"
