@@ -12,7 +12,7 @@ The script uses Scapy for packet manipulation and sending.
 import argparse
 import binascii
 
-from typing import Sequence, cast
+from typing import Any, List, Sequence, cast
 
 try:
     from arg_display import MaxWidthHelpFormatter, ModeOptionalAction
@@ -316,12 +316,16 @@ def setting_parser():
 
 
 if __name__ == "__main__":
+    logger: List[Any] = []
+
     parser = main_parser()
     args = parser.parse_args()
     teacher_ip = args.teacher_ip
     teacher_port = args.teacher_port
     target = args.target
     port = args.target_port
+
+    logger.append(args)
 
     try:
         if args.message:
@@ -379,6 +383,7 @@ if __name__ == "__main__":
             parser2 = setting_parser()
             setting_args = parser2.parse_args(args.setting)
             payload = pkg_setting(**dict(setting_args._get_kwargs()))
+            logger.append(setting_args)  # Store parsed settings for debugging
         elif args.hex:
             payload = binascii.unhexlify(args.hex.replace(" ", ""))
         elif args.pkg:
@@ -393,6 +398,9 @@ if __name__ == "__main__":
             raise ValueError("Program logic error, please report this issue: No valid action specified.")
 
         broadcast_packet(teacher_ip, teacher_port, target, port, payload, ip_id=args.ip_id)
-        print(f"Packet sent to {target} on port {port} with payload length {len(payload)} bytes")
+
+        logger.append(f"Sent packet with a length of {len(payload)} to {target}:{port}")
+
+        print(*logger, sep="\n\n")
     except Exception as e:
         parser.error(f"({e.__class__.__name__}) {e}")
