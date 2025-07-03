@@ -206,6 +206,67 @@ def pkg_rename(name: str, name_id: int = 0) -> bytes:
     return head + data
 
 
+def pkg_setting(
+    network: bool = False,
+    transmission_reliability: Literal["low", "medium", "high"] = "medium",
+    offline_lag_time_detection: int = 10,
+    audio: bool = False,
+    playback_mute: bool = False,
+    recording_mute: bool = False,
+    recording_volume: int = 80,
+    playback_volume: int = 80,
+    password: bool = False,
+    password_value: str = "",
+    preventing_process_termination: Literal["disable", "enable", "default"] = "default",
+    lock_screen_when_maliciously_offline: Literal["disable", "enable", "default"] = "default",
+    hide_the_setup_name_button: Literal["disable", "enable", "default"] = "default",
+) -> bytes:
+    """
+    Packages a command to set various application settings into a specific byte format, including a header and formatted data.
+
+    Args:
+        network (bool): Whether to enable network settings.
+        transmission_reliability (Literal["low", "medium", "high"]): The level of transmission reliability.
+        offline_lag_time_detection (int): The time in seconds for offline lag time detection.
+        audio (bool): Whether to enable audio settings.
+        playback_mute (bool): Whether to mute playback audio.
+        recording_mute (bool): Whether to mute recording audio.
+        recording_volume (int): The volume level for recording audio (0-100).
+        playback_volume (int): The volume level for playback audio (0-100).
+        password (bool): Whether to enable password protection.
+        password_value (str): The password value to set, if password protection is enabled.
+        preventing_process_termination (Literal["disable", "enable", "default"]): Setting for preventing process termination.
+        lock_screen_when_maliciously_offline (Literal["disable", "enable", "default"]): Setting for locking the screen when maliciously offline.
+        hide_the_setup_name_button (Literal["disable", "enable", "default"]): Setting for hiding the setup name button.
+    """
+    lv = {"low": 0, "medium": 1, "high": 2}
+    setup = {"disable": 0, "enable": 1, "default": 2}
+    head = (
+        b"DMOC\x00\x00\x01\x00\x95\x00\x00\x00"
+        + secrets.token_bytes(16)
+        + b" N\x00\x00\xc0\xa8\xe9\x01\x88\x00\x00\x00\x88\x00\x00\x00\x00@\x00\x00\x00\x00\x00\x00\x06\x00\x00\x00{\x00\x00\x00"
+    )
+    network_setup = (
+        int(network).to_bytes(4, "little")
+        + lv[transmission_reliability].to_bytes(4, "little")
+        + offline_lag_time_detection.to_bytes(4, "little")
+    )
+    audio_setup = (
+        int(audio).to_bytes(4, "little")
+        + int(playback_mute).to_bytes(4, "little")
+        + int(recording_mute).to_bytes(4, "little")
+        + recording_volume.to_bytes(4, "little")
+        + playback_volume.to_bytes(4, "little")
+    )
+    passwd_setup = int(password).to_bytes(4, "little") + format_data(password_value + "\x00", 33)
+    secure_setup = (
+        setup[preventing_process_termination].to_bytes(4, "little")
+        + setup[lock_screen_when_maliciously_offline].to_bytes(4, "little")
+        + setup[hide_the_setup_name_button].to_bytes(4, "little")
+    )
+    return head + network_setup + audio_setup + passwd_setup + secure_setup + b"\x00" * 3
+
+
 class Rand16:
     """
     A class to generate random bytes of specified lengths, accessible as attributes.
