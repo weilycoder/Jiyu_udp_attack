@@ -217,9 +217,9 @@ def pkg_setting(
     playback_volume: int = 80,
     password: bool = False,
     password_value: str = "",
-    preventing_process_termination: Literal["disable", "enable", "default"] = "default",
-    lock_screen_when_maliciously_offline: Literal["disable", "enable", "default"] = "default",
-    hide_the_setup_name_button: Literal["disable", "enable", "default"] = "default",
+    preventing_process_termination: Literal["disable", "enable", "auto"] = "auto",
+    lock_screen_when_maliciously_offline: Literal["disable", "enable", "auto"] = "auto",
+    hide_the_setup_name_button: Literal["disable", "enable", "auto"] = "auto",
 ) -> bytes:
     """
     Packages a command to set various application settings into a specific byte format, including a header and formatted data.
@@ -235,12 +235,12 @@ def pkg_setting(
         playback_volume (int): The volume level for playback audio (0-100).
         password (bool): Whether to enable password protection.
         password_value (str): The password value to set, if password protection is enabled.
-        preventing_process_termination (Literal["disable", "enable", "default"]): Setting for preventing process termination.
-        lock_screen_when_maliciously_offline (Literal["disable", "enable", "default"]): Setting for locking the screen when maliciously offline.
-        hide_the_setup_name_button (Literal["disable", "enable", "default"]): Setting for hiding the setup name button.
+        preventing_process_termination (Literal["disable", "enable", "auto"]): Setting for preventing process termination.
+        lock_screen_when_maliciously_offline (Literal["disable", "enable", "auto"]): Setting for locking the screen when maliciously offline.
+        hide_the_setup_name_button (Literal["disable", "enable", "auto"]): Setting for hiding the setup name button.
     """
     lv = {"low": 0, "medium": 1, "high": 2}
-    setup = {"disable": 0, "enable": 1, "default": 2}
+    setup = {"disable": 0, "enable": 1, "auto": 2}
     head = (
         b"DMOC\x00\x00\x01\x00\x95\x00\x00\x00"
         + secrets.token_bytes(16)
@@ -258,7 +258,7 @@ def pkg_setting(
         + recording_volume.to_bytes(4, "little")
         + playback_volume.to_bytes(4, "little")
     )
-    passwd_setup = int(password).to_bytes(4, "little") + format_data(password_value + "\x00", 33)
+    passwd_setup = int(password).to_bytes(4, "little") + format_data(password_value + "\x00", 66)
     secure_setup = (
         setup[preventing_process_termination].to_bytes(4, "little")
         + setup[lock_screen_when_maliciously_offline].to_bytes(4, "little")

