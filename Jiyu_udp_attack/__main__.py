@@ -92,7 +92,7 @@ def main_parser():
         "--target",
         type=str,
         metavar="<ip>",
-        required=True,
+        nargs="*",
         help="Target IP address",
     )
     network_config_group.add_argument(
@@ -115,7 +115,7 @@ def main_parser():
     attack_action_group = parser.add_argument_group(
         "Attack Action", "Specify the action to perform on the target machine. "
     )
-    attack_action = attack_action_group.add_mutually_exclusive_group(required=True)
+    attack_action = attack_action_group.add_mutually_exclusive_group()
     attack_action.add_argument(
         "-m",
         "--message",
@@ -189,7 +189,7 @@ def main_parser():
         nargs="?",
         metavar="<setting-args>",
         const="--help",
-        help="Set specific settings on the target machine\nUse `Jiyu_udp_attack -t 127.0.0.1 --setting` for help",
+        help="Set specific settings on the target machine\nUse `Jiyu_udp_attack --setting` for help",
     )
     attack_action.add_argument(
         "--hex",
@@ -326,7 +326,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     teacher_ip = args.teacher_ip
     teacher_port = args.teacher_port
-    target = args.target
+    targets = args.target
     port = args.target_port
 
     logger.append(args)
@@ -399,11 +399,16 @@ if __name__ == "__main__":
                 format_str = format_str[1:]  # Remove leading ':'
             payload = pkg_customize(format_str, *user_args)
         else:
-            raise ValueError("Program logic error, please report this issue: No valid action specified.")
+            parser.error("At least one attack action must be specified. Use -h for help.")
 
-        broadcast_packet(teacher_ip, teacher_port, target, port, payload, ip_id=args.ip_id)
+        if targets is None:
+            parser.error("Target IP address must be specified. Use -h for help.")
+        if len(targets) == 0:
+            parser.error("Target IP address cannot be empty. Use -h for help.")
 
-        logger.append(f"Sent packet with a length of {len(payload)} to {target}:{port}")
+        for target in targets:
+            broadcast_packet(teacher_ip, teacher_port, target, port, payload, ip_id=args.ip_id)
+            logger.append(f"Sent packet with a length of {len(payload)} to {target}:{port}")
 
         print(*logger, sep="\n\n")
     except Exception as e:

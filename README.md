@@ -17,14 +17,14 @@
 使用 `python Jiyu_udp_attack -h` 来获取帮助信息：
 
 ```
-usage: Jiyu_udp_attack [-h] [-f <ip>] [-fp <port>] -t <ip> [-tp <port>]
-                       [-i <ip_id>] (-m <msg> | -w <url> | -c <command> |
+usage: Jiyu_udp_attack [-h] [-f <ip>] [-fp <port>] [-t [<ip> ...]] [-tp <port>]
+                       [-i <ip_id>] [-m <msg> | -w <url> | -c <command> |
                        -e <program> [<args> ...] |
                        -s [<timeout> [<message> ...]] |
                        -r [<timeout> [<message> ...]] |
                        -cw [<timeout> [<message> ...]] | -ctw |
                        -n <name> <name_id> | --setting [<setting-args>] |
-                       --hex <hex_data> | --pkg <custom_data> [<args> ...])
+                       --hex <hex_data> | --pkg <custom_data> [<args> ...]]
 
 Jiyu Attack Script
 
@@ -40,7 +40,8 @@ Network Configuration:
                         Teacher's IP address
   -fp, --teacher-port <port>
                         Teacher's port (default to random port)
-  -t, --target <ip>     Target IP address
+  -t, --target [<ip> ...]
+                        Target IP address
   -tp, --target-port <port>
                         Port to send packets to (default: 4705)
   -i, --ip-id <ip_id>   IP ID for the packet (default: random ID)
@@ -69,7 +70,7 @@ Attack Action:
                         Rename the target machine
   --setting [<setting-args>]
                         Set specific settings on the target machine
-                        Use `Jiyu_udp_attack -t 127.0.0.1 --setting` for help
+                        Use `Jiyu_udp_attack --setting` for help
   --hex <hex_data>      Send raw hex data to the target machine
   --pkg <custom_data> [<args> ...]
                         Custom packet data to send
@@ -93,7 +94,24 @@ Example usage:
     python Jiyu_udp_attack -t 127.0.0.1 --setting
 ```
 
-其中由于 `--setting` 的配置过于复杂，程序将其的配置项传入另一个命令行解析器，帮助文档如下：
+### Specify the IP
+
+对于目标 ip 的指定，可以：
+
++ 指定具体 ip，如 `192.168.3.103`；
++ 指定 ip 范围，如 `192.168.3.100-150`。
+
+最多指定 65536 个不同 ip。
+
+但是，更推荐的行为是：
+
++ 指定广播地址，如 `192.168.3.255`；
++ 指定 ip 段，如 `192.168.3.0/24`，这将被转换到广播地址 `192.168.3.255`；
++ 使用极域的组播地址 `224.50.50.42`。
+
+### `--setting`
+
+由于 `--setting` 的配置过于复杂，程序将其的配置项传入另一个命令行解析器，帮助文档如下：
 
 ```
 usage: Jiyu_udp_attack <main-args> --setting="[setting-options]"
@@ -138,22 +156,7 @@ Example usage:
     python Jiyu_udp_attack -t 192.168.233.0/24 --setting="--password --password-value 123456"
 ```
 
----
-
-其中目标 ip 的指定，可以：
-
-+ 指定具体 ip，如 `192.168.3.103`；
-+ 指定 ip 范围，如 `192.168.3.100-150`。
-
-最多指定 65536 个不同 ip。
-
-但是，更推荐的行为是：
-
-+ 指定广播地址，如 `192.168.3.255`；
-+ 指定 ip 段，如 `192.168.3.0/24`，这将被转换到广播地址 `192.168.3.255`；
-+ 使用极域的组播地址 `224.50.50.42`。
-
----
+### `--pkg`
 
 `--pkg` 用于发送格式化的数据包，可以指定参数，首个参数作为格式化字符串，其余参数被应用于字符串的格式化。格式化字符串的内容为 16 进制编码的数据包，因此需要保证应用格式化后字符串为合法的 16 进制编码串。
 
