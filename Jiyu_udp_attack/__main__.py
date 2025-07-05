@@ -47,6 +47,7 @@ except ImportError:
 
 def main_parser():
     parser = argparse.ArgumentParser(
+        prog="Jiyu_udp_attack",
         description="Jiyu Attack Script\n\n"
         "Github Repositories: https://github.com/weilycoder/Jiyu_udp_attack/tree/main/ \n",
         epilog="Example usage:\n"
@@ -137,7 +138,7 @@ def main_parser():
         metavar="<command>",
         help="Execute a command on the target machine\n(`cmd /D /C <command>`, Windows only)",
     )
-    temp = attack_action.add_argument(
+    attack_action.add_argument(
         "-e",
         "--execute",
         nargs="+",
