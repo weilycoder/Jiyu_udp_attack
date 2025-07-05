@@ -11,6 +11,7 @@ import argparse
 import binascii
 import shlex
 
+import sys
 from typing import Any, List, Sequence, cast
 
 try:
@@ -412,13 +413,13 @@ def main():
         if len(targets) == 0:
             parser.error("Target IP address cannot be empty. Use -h for help.")
 
-        for target in targets:
-            broadcast_packet(
-                teacher_ip, teacher_port, target, port, payload, ip_id=args.ip_id  # pylint: disable=E0601, E0606
-            )
-            logger.append(f"Sent packet with a length of {len(payload)} to {target}:{port}")
+        print(*logger, sep="\n\n", end="\n\n")
 
-        print(*logger, sep="\n\n")
+        for target in targets:
+            for dest in broadcast_packet(
+                teacher_ip, teacher_port, target, port, payload, ip_id=args.ip_id  # pylint: disable=E0601, E0606
+            ):
+                print(f"Sent packet with a length of {len(payload)} to {dest[0]}:{dest[1]}")
     except Exception as e:  # pylint: disable=broad-except
         parser.error(f"({e.__class__.__name__}) {e}")
 
@@ -426,6 +427,6 @@ def main():
 if __name__ == "__main__":
     main()
 else:
-    print("This script is intended to be run as a standalone program, not imported as a module.")
-    print("Please run it directly using 'python Jiyu_udp_attack/__main__.py' or similar command.")
+    print("This script is intended to be run as a standalone program, not imported as a module.", file=sys.stderr)
+    print("Please run it directly using 'python Jiyu_udp_attack/__main__.py' or similar command.", file=sys.stderr)
     raise ImportError("This script is not designed to be imported as a module.")

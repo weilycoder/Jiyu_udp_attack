@@ -5,7 +5,7 @@ This module is used to send or broadcast UDP packets with spoofed IP addresses.
 import struct
 import random
 import socket
-from typing import Optional
+from typing import List, Optional, Tuple
 
 try:
     from Jiyu_udp_attack.ip_analyze import ip_analyze
@@ -160,7 +160,7 @@ def broadcast_packet(
     payload: bytes,
     *,
     ip_id: Optional[int] = None,
-) -> None:
+) -> List[Tuple[str, int]]:
     """
     Sends a broadcast UDP packet to the specified destination IP address or range.
 
@@ -172,6 +172,14 @@ def broadcast_packet(
         dst_ip (str): The broadcast IP address (e.g., "192.168.1.255", "192.168.1.0/24", "192.168.1.10-100").
         dst_port (int): The destination port number.
         payload (bytes): The data payload to include in the packet.
+        ip_id (Optional[int]): The IP identification number. If None, a random ID will be used.
+        
+    Returns:
+        List[Tuple[str, int]]: A list of tuples containing the IP addresses and ports to which the packets were sent.
     """
-    for ip in ip_analyze(dst_ip):
+    sent_list: List[Tuple[str, int]] = []
+    for ip, port in ip_analyze(dst_ip):
+        port = port if 0 <= port <= 0xffff else dst_port
         send_packet(src_ip, src_port, ip, dst_port, payload, ip_id=ip_id)
+        sent_list.append((ip, port))
+    return sent_list

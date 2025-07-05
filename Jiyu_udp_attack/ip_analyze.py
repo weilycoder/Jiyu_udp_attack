@@ -26,7 +26,7 @@ def ip_to_tuple(ip: str) -> Tuple[int, int, int, int]:
     return ip_tuple
 
 
-def ip_analyze(ip: str) -> List[str]:  # pylint: disable=too-many-branches
+def ip_analyze(address: str) -> List[Tuple[str, int]]:
     """
     Analyzes an IP address or range and returns a list of valid IP addresses.
 
@@ -36,9 +36,15 @@ def ip_analyze(ip: str) -> List[str]:  # pylint: disable=too-many-branches
     Returns:
         list[str]: A list of valid IP addresses.
     """
-    if not isinstance(ip, str):
-        raise TypeError(f"Expected string, got {type(ip).__name__}")
-    ip = ip.replace(" ", "")
+    if not isinstance(address, str):
+        raise TypeError(f"Expected string, got {type(address).__name__}")
+    if address.count(":") > 1:
+        raise ValueError(f"Invalid address format: {address}")
+    address = address.replace(" ", "")
+    ip, port = address.split(":") if ":" in address else (address, -1)
+    if port != -1 and not (port.isdigit() and (0 <= int(port) <= 65535)):
+        raise ValueError(f"Invalid port number: {port}")
+    port = int(port)
     if "/" in ip:
         try:
             ip_addr, mask = ip.split("/")
@@ -52,7 +58,7 @@ def ip_analyze(ip: str) -> List[str]:  # pylint: disable=too-many-branches
         ip_tuple = ip_to_tuple(ip_addr)
         ip32 = ip_tuple[0] << 24 | ip_tuple[1] << 16 | ip_tuple[2] << 8 | ip_tuple[3]
         ip32 |= (1 << (32 - mask)) - 1
-        return [f"{(ip32 >> 24) & 0xFF}.{(ip32 >> 16) & 0xFF}.{(ip32 >> 8) & 0xFF}.{ip32 & 0xFF}"]
+        return [(f"{(ip32 >> 24) & 0xFF}.{(ip32 >> 16) & 0xFF}.{(ip32 >> 8) & 0xFF}.{ip32 & 0xFF}", port)]
     if "-" in ip:
         ip_range_tuple = ip.split(".")
         if len(ip_range_tuple) != 4:
@@ -75,11 +81,11 @@ def ip_analyze(ip: str) -> List[str]:  # pylint: disable=too-many-branches
         if ip_count > 65536:
             raise ValueError(f"IP address range too large: {ip_count} addresses")
         return [
-            f"{a}.{b}.{c}.{d}"
+            (f"{a}.{b}.{c}.{d}", port)
             for a in range(ip_range[0][0], ip_range[0][1] + 1)
             for b in range(ip_range[1][0], ip_range[1][1] + 1)
             for c in range(ip_range[2][0], ip_range[2][1] + 1)
             for d in range(ip_range[3][0], ip_range[3][1] + 1)
         ]
     ip_tuple = ip_to_tuple(ip)
-    return [f"{ip_tuple[0]}.{ip_tuple[1]}.{ip_tuple[2]}.{ip_tuple[3]}"]
+    return [(f"{ip_tuple[0]}.{ip_tuple[1]}.{ip_tuple[2]}.{ip_tuple[3]}", port)]
