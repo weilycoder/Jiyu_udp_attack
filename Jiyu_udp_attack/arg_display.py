@@ -52,6 +52,7 @@ class ModeOptionalAction(argparse.Action):
             setattr(namespace, self.dest, (mode, values))
 
     def format_usage(self) -> str:
+        """Format the usage string for this action."""
         return " | ".join(self.option_strings)
 
 

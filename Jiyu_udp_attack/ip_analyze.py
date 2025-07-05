@@ -2,7 +2,6 @@
 This module provides functions to analyze IP addresses and ranges, converting them into a list of valid IP addresses.
 """
 
-
 from typing import List, Tuple
 
 
@@ -27,8 +26,7 @@ def ip_to_tuple(ip: str) -> Tuple[int, int, int, int]:
     return ip_tuple
 
 
-# pylint: disable=too-many-branches
-def ip_analyze(ip: str) -> List[str]:
+def ip_analyze(ip: str) -> List[str]:  # pylint: disable=too-many-branches
     """
     Analyzes an IP address or range and returns a list of valid IP addresses.
 
@@ -60,10 +58,10 @@ def ip_analyze(ip: str) -> List[str]:
         if len(ip_range_tuple) != 4:
             raise ValueError(f"Invalid IP address range format: {ip}")
         ip_count = 1
-        ip_range: list[tuple[int, int]] = []
+        ip_range: List[Tuple[int, int]] = []
         for i in ip_range_tuple:
             rg = i.split("-")
-            if len(rg) ==1:
+            if len(rg) == 1:
                 rg.append(rg[0])
             if len(rg) != 2:
                 raise ValueError(f"Invalid IP address range format: {ip}")

@@ -1,3 +1,10 @@
 [MASTER]
 py-version = 3.8
-disable = invalid-name, line-too-long, too-many-locals, too-many-arguments, too-many-return-statements, too-many-positional-arguments
+disable =
+    invalid-name,
+    line-too-long,
+    too-many-arguments,
+    too-many-branches,
+    too-many-locals,
+    too-many-return-statements,
+    too-many-statements
