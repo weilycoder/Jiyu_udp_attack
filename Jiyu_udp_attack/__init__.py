@@ -12,6 +12,7 @@ try:
         pkg_rename,
         pkg_website,
         pkg_execute,
+        pkg_setting,
         pkg_customize,
     )
 except ImportError:
@@ -24,6 +25,7 @@ except ImportError:
         pkg_rename,
         pkg_website,
         pkg_execute,
+        pkg_setting,
         pkg_customize,
     )
 
@@ -38,5 +40,6 @@ __all__ = [
     "pkg_rename",
     "pkg_website",
     "pkg_execute",
+    "pkg_setting",
     "pkg_customize",
 ]
