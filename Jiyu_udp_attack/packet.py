@@ -11,13 +11,14 @@ from typing import Literal, Optional, Union
 
 
 __all__ = [
-    "pkg_message",
-    "pkg_execute",
-    "pkg_website",
-    "pkg_shutdown",
-    "pkg_close_windows",
     "pkg_close_top_window",
+    "pkg_close_windows",
+    "pkg_message",
+    "pkg_shutdown",
     "pkg_rename",
+    "pkg_website",
+    "pkg_execute",
+    "pkg_setting",
     "pkg_customize",
 ]
 
