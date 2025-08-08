@@ -7,6 +7,9 @@ import random
 import socket
 from typing import List, Optional, Tuple
 
+from scapy.all import send as scapy_send
+from scapy.all import IP, UDP, Raw, RandShort  # type: ignore
+
 try:
     from Jiyu_udp_attack.ip_analyze import ip_analyze
 except ImportError:
@@ -145,11 +148,10 @@ def send_packet(
         client.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         client.sendto(payload, (dst_ip, dst_port))
     else:
-        client = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)
-        client.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
-        client.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-        packet = create_raw_udp_packet(src_ip, src_port, dst_ip, dst_port, payload, ip_id=ip_id)
-        client.sendto(packet, (dst_ip, dst_port))
+        ip_layer = IP(src=src_ip, dst=dst_ip)
+        udp_layer = UDP(sport=RandShort() if src_port is None else src_port, dport=dst_port)
+        packet = ip_layer / udp_layer / Raw(load=payload)
+        scapy_send(packet, verbose=0)
 
 
 def broadcast_packet(
