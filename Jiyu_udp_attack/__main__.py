@@ -105,7 +105,8 @@ def main_parser():
         type=int,
         metavar="<port>",
         default=4705,
-        help="Port to send packets to (default: 4705)",
+        help="Port to send packets to (default: 4705 for Jiyu 2016)\n"
+             "Note: For Jiyu 2020, use port 4988.",
     )
     network_config_group.add_argument(
         "-i",
