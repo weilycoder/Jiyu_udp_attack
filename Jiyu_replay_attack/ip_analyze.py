@@ -59,7 +59,12 @@ def ip_analyze(address: str) -> List[Tuple[str, int]]:
         ip_tuple = ip_to_tuple(ip_addr)
         ip32 = ip_tuple[0] << 24 | ip_tuple[1] << 16 | ip_tuple[2] << 8 | ip_tuple[3]
         ip32 |= (1 << (32 - mask)) - 1
-        return [(f"{(ip32 >> 24) & 0xFF}.{(ip32 >> 16) & 0xFF}.{(ip32 >> 8) & 0xFF}.{ip32 & 0xFF}", port)]
+        return [
+            (
+                f"{(ip32 >> 24) & 0xFF}.{(ip32 >> 16) & 0xFF}.{(ip32 >> 8) & 0xFF}.{ip32 & 0xFF}",
+                port,
+            )
+        ]
     if "-" in ip:
         ip_range_tuple = ip.split(".")
         if len(ip_range_tuple) != 4:

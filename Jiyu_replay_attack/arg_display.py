@@ -13,7 +13,13 @@ class ModeOptionalAction(argparse.Action):
     This action allows the user to specify a mode (e.g., --max or --min) for the program execution.
     """
 
-    def __init__(self, option_strings: Sequence[str], dest: str, modes: Sequence[str], **kwargs: Any):
+    def __init__(
+        self,
+        option_strings: Sequence[str],
+        dest: str,
+        modes: Sequence[str],
+        **kwargs: Any,
+    ):
         self.modes = list(modes)
 
         if any("-" in mode for mode in self.modes):
@@ -65,7 +71,13 @@ class MaxWidthHelpFormatter(argparse.RawTextHelpFormatter):
     It ensures that the usage line does not exceed a specified width.
     """
 
-    def __init__(self, prog: str, indent_increment: int = 2, max_help_position: int = 24, width: int = 80) -> None:
+    def __init__(
+        self,
+        prog: str,
+        indent_increment: int = 2,
+        max_help_position: int = 24,
+        width: int = 80,
+    ) -> None:
         super().__init__(prog, indent_increment, max_help_position, width)
 
     def _format_usage(

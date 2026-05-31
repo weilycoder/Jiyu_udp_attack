@@ -6,7 +6,12 @@ import socket
 from typing import List, Optional, Tuple
 
 from scapy.all import send as scapy_send
-from scapy.all import IP, UDP, Raw, RandShort  # pylint: disable=no-name-in-module  # type: ignore
+from scapy.all import (
+    IP,
+    UDP,
+    Raw,
+    RandShort,
+)  # pylint: disable=no-name-in-module  # type: ignore
 
 try:
     from Jiyu_replay_attack.ip_analyze import ip_analyze
@@ -68,13 +73,13 @@ def broadcast_packet(
         dst_port (int): The destination port number.
         payload (bytes): The data payload to include in the packet.
         ip_id (Optional[int]): The IP identification number. If None, a random ID will be used.
-        
+
     Returns:
         List[Tuple[str, int]]: A list of tuples containing the IP addresses and ports to which the packets were sent.
     """
     sent_list: List[Tuple[str, int]] = []
     for ip, port in ip_analyze(dst_ip):
-        port = port if 0 <= port <= 0xffff else dst_port
+        port = port if 0 <= port <= 0xFFFF else dst_port
         send_packet(src_ip, src_port, ip, port, payload, ip_id=ip_id)
         sent_list.append((ip, port))
     return sent_list

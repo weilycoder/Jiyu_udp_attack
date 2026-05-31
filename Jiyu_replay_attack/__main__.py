@@ -107,8 +107,7 @@ def main_parser():
         type=int,
         metavar="<port>",
         default=4705,
-        help="Port to send packets to (default: 4705 for Jiyu 2016)\n"
-             "Note: For Jiyu 2020, use port 4988.",
+        help="Port to send packets to (default: 4705 for Jiyu 2016)\n" "Note: For Jiyu 2020, use port 4988.",
     )
     network_config_group.add_argument(
         "-i",
@@ -389,7 +388,9 @@ def main():
                 else:
                     parser.error("Invalid execute arguments: expected [program] or [program, args_list]")
             payload = pkg_execute(
-                program, args_list, "normal" if mode is None else mode  # pylint: disable=E0601, E0606
+                program,
+                args_list,
+                "normal" if mode is None else mode,  # pylint: disable=E0601, E0606
             )
         elif args.shutdown is not None:
             if len(args.shutdown) == 0:
@@ -448,7 +449,12 @@ def main():
 
         for target in targets:
             for dest in broadcast_packet(
-                teacher_ip, teacher_port, target, port, payload, ip_id=args.ip_id  # pylint: disable=E0601, E0606
+                teacher_ip,
+                teacher_port,
+                target,
+                port,
+                payload,
+                ip_id=args.ip_id,  # pylint: disable=E0601, E0606
             ):
                 print(f"Sent packet with a length of {len(payload)} to {dest[0]}:{dest[1]}")
     except Exception as e:  # pylint: disable=broad-except
@@ -458,6 +464,12 @@ def main():
 if __name__ == "__main__":
     main()
 else:
-    print("This script is intended to be run as a standalone program, not imported as a module.", file=sys.stderr)
-    print("Please run it directly using 'python Jiyu_replay_attack/__main__.py' or similar command.", file=sys.stderr)
+    print(
+        "This script is intended to be run as a standalone program, not imported as a module.",
+        file=sys.stderr,
+    )
+    print(
+        "Please run it directly using 'python Jiyu_replay_attack/__main__.py' or similar command.",
+        file=sys.stderr,
+    )
     raise ImportError("This script is not designed to be imported as a module.")
