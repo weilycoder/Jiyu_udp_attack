@@ -75,6 +75,6 @@ def broadcast_packet(
     sent_list: List[Tuple[str, int]] = []
     for ip, port in ip_analyze(dst_ip):
         port = port if 0 <= port <= 0xffff else dst_port
-        send_packet(src_ip, src_port, ip, dst_port, payload, ip_id=ip_id)
+        send_packet(src_ip, src_port, ip, port, payload, ip_id=ip_id)
         sent_list.append((ip, port))
     return sent_list
