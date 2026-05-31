@@ -50,7 +50,8 @@ def ip_analyze(address: str) -> List[Tuple[str, int]]:
             ip_addr, mask = ip.split("/")
             assert mask.isdigit(), f"Invalid subnet mask: {mask}"
             mask = int(mask)
-            assert mask in range(0, 32, 8), f"Invalid subnet mask: {mask}"
+            if mask < 0 or mask > 32:
+                raise ValueError(f"Invalid subnet mask: {mask}")
         except ValueError:
             raise ValueError(f"Invalid IP address format: {ip}") from None
         except AssertionError as e:
