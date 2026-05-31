@@ -41,7 +41,7 @@ def send_packet(
         client.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         client.sendto(payload, (dst_ip, dst_port))
     else:
-        ip_layer = IP(src=src_ip, dst=dst_ip)
+        ip_layer = IP(src=src_ip, dst=dst_ip, id=RandShort() if ip_id is None else ip_id)
         udp_layer = UDP(sport=RandShort() if src_port is None else src_port, dport=dst_port)
         packet = ip_layer / udp_layer / Raw(load=payload)
         scapy_send(packet, verbose=0)
