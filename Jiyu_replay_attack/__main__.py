@@ -28,6 +28,7 @@ try:
         pkg_setting,
         pkg_customize,
     )
+    from tools import candidate_udp_ports, list_udp_listeners
 except ImportError:
     from Jiyu_replay_attack.arg_display import MaxWidthHelpFormatter, ModeOptionalAction
     from Jiyu_replay_attack.sender import broadcast_packet
@@ -42,6 +43,7 @@ except ImportError:
         pkg_setting,
         pkg_customize,
     )
+    from Jiyu_replay_attack.tools import candidate_udp_ports, list_udp_listeners
 
 
 def main_parser():
@@ -208,6 +210,25 @@ def main_parser():
         metavar=("<custom_data>", "<args>"),
         help="Custom packet data to send",
     )
+
+    detect_group = parser.add_argument_group(
+        "Local Detection",
+        "Detect local UDP listeners and print results.",
+    )
+    detect_group.add_argument(
+        "--detect-udp",
+        nargs="*",
+        metavar="<keyword>",
+        default=None,
+        help="Detect local UDP listeners and exit",
+    )
+    detect_group.add_argument(
+        "--detect-format",
+        type=str,
+        metavar="<format>",
+        default=None,
+        help="Python format output. Default for one-line port list.",
+    )
     return parser
 
 
@@ -338,6 +359,15 @@ def main():
     logger.append(args)
 
     try:
+        if args.detect_udp is not None:
+            keywords = args.detect_udp if len(args.detect_udp) > 0 else ["studentmain"]
+            if args.detect_format is None:
+                ports = candidate_udp_ports(keywords)
+                print(" ".join(str(port) for port in ports))
+            else:
+                for ip, port, pid, name in list_udp_listeners(keywords):
+                    print(args.detect_format.format(ip=ip, port=port, pid=pid, name=ascii(name)))
+            return
         if args.message:
             payload = pkg_message(args.message)
         elif args.website:
