@@ -3,8 +3,8 @@ This module is used to forge Jiyu's UDP packets and send them to the student cli
 """
 
 try:
-    from Jiyu_udp_attack.sender import send_packet, broadcast_packet
-    from Jiyu_udp_attack.packet import (
+    from Jiyu_replay_attack.sender import send_packet, broadcast_packet
+    from Jiyu_replay_attack.packet import (
         pkg_close_top_window,
         pkg_close_windows,
         pkg_message,

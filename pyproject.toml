@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "Jiyu-udp-attack"
-version = "2.0.0"
+name = "Jiyu-replay-attack"
+version = "3.0.0"
 description = "Send packets to student machines disguised as Jiyu teacher machine"
 authors = ["weilycoder <weily2009@outlook.com>"]
 license = "MIT"

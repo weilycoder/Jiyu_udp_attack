@@ -9,7 +9,7 @@ from scapy.all import send as scapy_send
 from scapy.all import IP, UDP, Raw, RandShort  # pylint: disable=no-name-in-module  # type: ignore
 
 try:
-    from Jiyu_udp_attack.ip_analyze import ip_analyze
+    from Jiyu_replay_attack.ip_analyze import ip_analyze
 except ImportError:
     from ip_analyze import ip_analyze
 

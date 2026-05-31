@@ -29,9 +29,9 @@ try:
         pkg_customize,
     )
 except ImportError:
-    from Jiyu_udp_attack.arg_display import MaxWidthHelpFormatter, ModeOptionalAction
-    from Jiyu_udp_attack.sender import broadcast_packet
-    from Jiyu_udp_attack.packet import (
+    from Jiyu_replay_attack.arg_display import MaxWidthHelpFormatter, ModeOptionalAction
+    from Jiyu_replay_attack.sender import broadcast_packet
+    from Jiyu_replay_attack.packet import (
         pkg_close_top_window,
         pkg_close_windows,
         pkg_message,

