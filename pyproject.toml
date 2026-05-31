@@ -11,6 +11,11 @@ python = ">=3.8,<4"
 scapy = "^2.6.1"
 psutil = "^5.9.8"
 
+[tool.poetry.dev-dependencies]
+black = "^24.8.0"
+
+[tool.black]
+line-length = 120
 
 [build-system]
 requires = ["poetry-core"]
