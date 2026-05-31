@@ -333,7 +333,7 @@ class HexStr:
             if name == "len":
                 return HexInt(len(self.value))
             if name == "hex":
-                return HexStr(self.value.encode("utf-8").hex())
+                return HexStr(self.value.encode("utf-16le").hex())
             if name == "int":
                 return HexInt(int(self.value))
             if name.startswith("int_"):
