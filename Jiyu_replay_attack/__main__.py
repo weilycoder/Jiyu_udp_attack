@@ -344,11 +344,12 @@ def setting_parser():
         help="Set the process termination prevention mode (default: auto)",
     )
     other.add_argument(
+        "--lock-screen-when-offline",
         "--lock-screen-when-maliciously-offline",
         type=str,
         choices=("disable", "enable", "auto"),
         default="auto",
-        help="Set the lock screen mode when maliciously offline (default: auto)",
+        help="Set the lock screen mode when offline (default: auto)",
     )
     other.add_argument(
         "--hide-the-setup-name-button",

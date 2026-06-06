@@ -91,7 +91,7 @@ python -m Jiyu_replay_attack udp-attack [options]
 --password                              启用密码
 --password-value <pwd>                  设置密码
 --preventing-process-termination        防进程终止：disable / enable / auto（默认）
---lock-screen-when-maliciously-offline  恶意离线锁屏：disable / enable / auto（默认）
+--lock-screen-when-offline              恶意离线锁屏：disable / enable / auto（默认）
 --hide-the-setup-name-button            隐藏设置名称按钮：disable / enable / auto（默认）
 ```
 

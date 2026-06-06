@@ -206,7 +206,7 @@ def pkg_setting(
     password: bool = False,
     password_value: str = "",
     preventing_process_termination: Literal["disable", "enable", "auto"] = "auto",
-    lock_screen_when_maliciously_offline: Literal["disable", "enable", "auto"] = "auto",
+    lock_screen_when_offline: Literal["disable", "enable", "auto"] = "auto",
     hide_the_setup_name_button: Literal["disable", "enable", "auto"] = "auto",
 ) -> bytes:
     """
@@ -224,7 +224,7 @@ def pkg_setting(
         password (bool): Whether to enable password protection.
         password_value (str): The password value to set, if password protection is enabled.
         preventing_process_termination (Literal["disable", "enable", "auto"]): Setting for preventing process termination.
-        lock_screen_when_maliciously_offline (Literal["disable", "enable", "auto"]): Setting for locking the screen when maliciously offline.
+        lock_screen_when_offline (Literal["disable", "enable", "auto"]): Setting for locking the screen when offline.
         hide_the_setup_name_button (Literal["disable", "enable", "auto"]): Setting for hiding the setup name button.
     """
     lv = {"low": 0, "medium": 1, "high": 2}
@@ -249,7 +249,7 @@ def pkg_setting(
     passwd_setup = int(password).to_bytes(4, "little") + format_data(password_value + "\x00", 66)
     secure_setup = (
         setup[preventing_process_termination].to_bytes(4, "little")
-        + setup[lock_screen_when_maliciously_offline].to_bytes(4, "little")
+        + setup[lock_screen_when_offline].to_bytes(4, "little")
         + setup[hide_the_setup_name_button].to_bytes(4, "little")
     )
     return head + network_setup + audio_setup + passwd_setup + secure_setup + b"\x00" * 3
